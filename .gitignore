@@ -30,3 +30,6 @@ replay_pid*
 build/
 .gradle/
 .vscode/
+
+# Gradle wrapper (./gradlew en CI)
+!gradle/wrapper/gradle-wrapper.jar
