@@ -46,6 +46,9 @@
         "java.configuration.updateBuildConfiguration": "automatic",
         "java.import.gradle.wrapper.enabled": true,
         "editor.formatOnSave": true,
+        "[java]": {
+          "editor.formatOnSave": false
+        },
         "files.eol": "\n",
         "files.exclude": {
           "**/.gradle": true,
