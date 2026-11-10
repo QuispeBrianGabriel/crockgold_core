@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'org.springframework.boot' version '4.1.2'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'com.diffplug.spotless' version '8.11.0'
@@ -7,7 +8,6 @@ plugins {
 }
 
 group = 'com.crockgold'
-version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
@@ -47,6 +47,18 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
+}
+
+tasks.named('jacocoTestReport') {
+	reports {
+		xml.required = true
+		csv.required = true
+	}
+}
+
+tasks.named('check') {
+	dependsOn 'jacocoTestReport'
 }
 
 spotless {
