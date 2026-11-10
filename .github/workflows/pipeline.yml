@@ -2,21 +2,43 @@ name: Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: pipeline-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  check:
-    name: Check (format, lint, test)
+  commitlint:
+    name: Commitlint (commits y título del PR)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Validar commits
+        uses: wagoid/commitlint-github-action@v6
+      - name: Validar título del PR
+        if: github.event_name == 'pull_request'
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  check:
+    name: Check (format, lint, test, coverage)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
@@ -31,18 +53,28 @@ jobs:
           name: test-reports
           path: build/reports/
 
-  build:
-    name: Build (Docker image)
-    needs: check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - name: Coverage comment (PR)
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.8.0
         with:
-          context: .
-          target: prod
-          push: false
-          tags: crockgold-core:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          paths: build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Cobertura
+          update-comment: true
+
+      - name: Coverage badge (main)
+        if: github.ref == 'refs/heads/main'
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          generate-branches-badge: true
+      - name: Commit badge
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if [[ -n "$(git status --porcelain .github/badges)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/badges
+            git commit -m "chore: update coverage badges"
+            git push
+          fi

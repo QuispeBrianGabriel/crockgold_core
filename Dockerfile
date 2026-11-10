@@ -25,13 +25,14 @@ CMD ["sleep", "infinity"]
 
 # ----- build: empaquetado del JAR -----
 FROM base AS build
-COPY gradlew settings.gradle build.gradle ./
+COPY gradlew settings.gradle build.gradle gradle.properties ./
 COPY gradle gradle
 RUN --mount=type=cache,target=/root/.gradle \
     ./gradlew --no-daemon dependencies > /dev/null
 COPY src src
+ARG VERSION=0.0.1-SNAPSHOT
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon bootJar -x test \
+    ./gradlew --no-daemon bootJar -x test -Pversion="$VERSION" \
     && cp build/libs/*[!n].jar /app/app.jar
 
 # ----- prod: imagen final mínima (solo JRE, no-root) -----
