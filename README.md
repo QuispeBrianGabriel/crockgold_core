@@ -1,5 +1,7 @@
 # Crockgold Core
 
+[![Pipeline](../../actions/workflows/pipeline.yml/badge.svg)](../../actions/workflows/pipeline.yml) ![Coverage](.github/badges/jacoco.svg) ![Branches](.github/badges/branches.svg)
+
 **Crockgold Core** es el motor fundamental diseñado para gobernar, proteger y analizar economías virtuales en videojuegos y mundos digitales. 
 
 ## El Problema
