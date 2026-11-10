@@ -1,5 +1,4 @@
 {
-  "name": "Crockgold Core",
   "dockerComposeFile": [
     "../compose.yml"
   ],
@@ -9,6 +8,10 @@
     "db"
   ],
   "workspaceFolder": "/app",
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/home/ubuntu/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.claude.json,target=/home/ubuntu/.claude.json,type=bind,consistency=cached"
+  ],
   "remoteUser": "ubuntu",
   "shutdownAction": "stopCompose",
   "forwardPorts": [
