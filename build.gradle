@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '8.11.0'
+	id 'net.ltgt.errorprone' version '5.2.0'
 }
 
 group = 'com.crockgold'
@@ -40,8 +42,20 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+	errorprone 'com.google.errorprone:error_prone_core:2.52.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		palantirJavaFormat()
+		formatAnnotations()
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.errorprone.disableWarningsInGeneratedCode = true
 }
