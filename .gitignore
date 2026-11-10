@@ -29,3 +29,4 @@ replay_pid*
 # Build directories
 build/
 .gradle/
+.vscode/
