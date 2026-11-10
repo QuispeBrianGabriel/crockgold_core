@@ -15,6 +15,24 @@ permissions:
   contents: read
 
 jobs:
+  commitlint:
+    name: Commitlint (commits y título del PR)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Validar commits
+        uses: wagoid/commitlint-github-action@v6
+      - name: Validar título del PR
+        if: github.event_name == 'pull_request'
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   check:
     name: Check (format, lint, test, coverage)
     runs-on: ubuntu-latest
