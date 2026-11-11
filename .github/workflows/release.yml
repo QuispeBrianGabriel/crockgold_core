@@ -1,9 +1,12 @@
 name: Release
 
+# Cada push a main ejecuta release-please:
+#   - con commits feat/fix nuevos, abre o actualiza el PR de release
+#     (versión en gradle.properties + CHANGELOG.md);
+#   - al mergear ese PR, crea el tag y el GitHub Release, y se publica la imagen.
 on:
   push:
     branches: [main]
-    paths: [gradle.properties]
   workflow_dispatch:
 
 concurrency:
@@ -17,53 +20,40 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  version:
-    name: Resolve version
+  release-please:
+    name: Release PR / tag
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     outputs:
-      tag: ${{ steps.version.outputs.tag }}
-      release: ${{ steps.version.outputs.release }}
+      release: ${{ steps.rp.outputs.release_created }}
+      tag: ${{ steps.rp.outputs.tag_name }}
     steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - id: version
-        run: |
-          version="$(sed -n 's/^version=//p' gradle.properties)"
-          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
-            echo "::error file=gradle.properties::'$version' no es una versión MAJOR.MINOR.PATCH"
-            exit 1
-          fi
-          tag="v$version"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-
-          if git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
-            echo "::notice::$tag ya está publicado; no hay nada que hacer."
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          latest="$(git tag --list 'v[0-9]*' | sort -V | tail -n 1)"
-          if [[ -n "$latest" && "$(printf '%s\n%s\n' "$latest" "$tag" | sort -V | tail -n 1)" != "$tag" ]]; then
-            echo "::error file=gradle.properties::$tag es anterior al último release ($latest)"
-            exit 1
-          fi
-          echo "release=true" >> "$GITHUB_OUTPUT"
+      - id: rp
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      # Los PR creados con GITHUB_TOKEN no disparan workflows: se lanza el
+      # pipeline sobre la rama del PR de release para que tenga su check.
+      - if: steps.rp.outputs.prs_created == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ fromJSON(steps.rp.outputs.pr).headBranchName }}
+        run: gh workflow run pipeline.yml --repo "$GITHUB_REPOSITORY" --ref "$BRANCH"
 
   check:
     name: Quality gate
-    needs: version
-    if: needs.version.outputs.release == 'true'
+    needs: release-please
+    if: needs.release-please.outputs.release == 'true'
     uses: ./.github/workflows/pipeline.yml
     permissions:
       contents: read
-      pull-requests: read
 
   image:
     name: Build & publish image
-    needs: [version, check]
+    needs: [release-please, check]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -75,7 +65,7 @@ jobs:
       image: ${{ steps.vars.outputs.image }}
       digest: ${{ steps.build.outputs.digest }}
     env:
-      TAG: ${{ needs.version.outputs.tag }}
+      TAG: ${{ needs.release-please.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
 
@@ -130,26 +120,23 @@ jobs:
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
-  release:
-    name: Tag & GitHub Release
-    needs: [version, image]
+  notes:
+    name: Add image info to the release
+    needs: [release-please, image]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       contents: write
     steps:
       - env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ needs.version.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag }}
           IMAGE: ${{ needs.image.outputs.image }}
           DIGEST: ${{ needs.image.outputs.digest }}
         run: |
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --generate-notes \
-            --latest \
-            --notes "$(cat <<EOF
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body --jq .body > notes.md
+          cat >> notes.md <<EOF
+
           ## Imagen Docker
 
           \`\`\`
@@ -160,8 +147,7 @@ jobs:
           |---|---|
           | Digest | \`${DIGEST}\` |
           | Commit | ${GITHUB_SHA} |
-          | Tags | \`${TAG#v}\`, \`latest\` |
 
           Verificar procedencia: \`gh attestation verify oci://${IMAGE}@${DIGEST} --repo ${GITHUB_REPOSITORY}\`
           EOF
-          )"
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file notes.md
