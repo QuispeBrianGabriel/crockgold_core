@@ -31,10 +31,6 @@ jobs:
     steps:
       - id: rp
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-      # Los PR creados con GITHUB_TOKEN no disparan workflows: se lanza el
-      # pipeline sobre la rama del PR de release para que tenga su check.
-      # El JSON se parsea en el shell: fromJSON() en la expresión falla si la
-      # salida llega vacía, aunque el paso no vaya a ejecutarse.
       - if: steps.rp.outputs.prs_created == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
