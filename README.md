@@ -1,6 +1,6 @@
 # Crockgold Core
 
-[![Pipeline](../../actions/workflows/pipeline.yml/badge.svg)](../../actions/workflows/pipeline.yml) ![Coverage](.github/badges/jacoco.svg) ![Branches](.github/badges/branches.svg)
+[![Pipeline](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml/badge.svg)](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml) [![Coverage](https://codecov.io/gh/quispebriangabriel/crockgold_core/graph/badge.svg)](https://codecov.io/gh/quispebriangabriel/crockgold_core)
 
 **Crockgold Core** es el motor fundamental diseñado para gobernar, proteger y analizar economías virtuales en videojuegos y mundos digitales. 
 
