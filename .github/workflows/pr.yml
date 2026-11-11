@@ -1,0 +1,76 @@
+name: PR
+
+# Genera el título y la descripción del PR a partir de sus commits
+# (Conventional Commits), para que nadie tenga que escribirlos a mano.
+#
+# Seguridad: pull_request_target da un token con escritura también en forks,
+# así que este workflow NO hace checkout ni ejecuta código del PR; los mensajes
+# de commit se tratan solo como datos.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, edited]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  describe:
+    name: Title & description
+    # Dependabot y release-please ya generan los suyos.
+    if: github.event.pull_request.user.type != 'Bot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          api="repos/$GITHUB_REPOSITORY/pulls/$PR"
+          re='^([a-z]+)(\([^)]+\))?(!)?: .+'
+          order=(breaking feat fix perf refactor docs test build ci chore other)
+          declare -A group=() label=(
+            [breaking]="⚠️ Cambios incompatibles" [feat]="Novedades" [fix]="Correcciones"
+            [perf]="Rendimiento" [refactor]="Refactorizaciones" [docs]="Documentación"
+            [test]="Pruebas" [build]="Build y dependencias" [ci]="CI/CD"
+            [chore]="Mantenimiento" [other]="Sin formato Conventional Commits"
+          )
+
+          # Agrupa los commits del PR por tipo.
+          while IFS= read -r subject; do
+            key=other
+            if [[ $subject =~ $re ]]; then
+              key=${BASH_REMATCH[1]}
+              [[ -n ${BASH_REMATCH[3]} ]] && key=breaking
+              [[ -v label[$key] && $key != other ]] || key=chore
+            fi
+            group[$key]+="- $subject"$'\n'
+          done < <(gh api "$api/commits" --paginate --jq '.[].commit.message | split("\n")[0]')
+
+          # Título: se respeta si ya es válido; si no, el commit más relevante.
+          title="$(gh api "$api" --jq .title)"
+          if [[ ! $title =~ $re ]]; then
+            for key in "${order[@]:0:10}"; do
+              if [[ -n ${group[$key]:-} ]]; then
+                title=${group[$key]%%$'\n'*}
+                title=${title#- }
+                break
+              fi
+            done
+          fi
+
+          # Descripción: se conserva lo escrito a mano y se regenera el bloque de cambios.
+          gh api "$api" --jq '.body // ""' | sed '/<!-- cambios:inicio -->/,/<!-- cambios:fin -->/d' > body.md
+          {
+            echo '<!-- cambios:inicio -->'
+            echo '## Cambios'
+            for key in "${order[@]}"; do
+              [[ -n ${group[$key]:-} ]] && printf '\n### %s\n\n%s' "${label[$key]}" "${group[$key]}"
+            done
+            echo '<!-- cambios:fin -->'
+          } >> body.md
+          gh api --method PATCH "$api" -f title="$title" -F body=@body.md --silent
