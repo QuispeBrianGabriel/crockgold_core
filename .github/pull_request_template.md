@@ -13,8 +13,6 @@
 
 ## Lista de verificación
 
-- [ ] El título del PR sigue [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/) (ej. `feat: agrega endpoint de usuarios`)
-- [ ] Los commits siguen Conventional Commits
 - [ ] El código cumple el formato y lint (`./gradlew check`)
 - [ ] La documentación fue actualizada (si aplica)
 - [ ] No se incluyen secretos ni credenciales
