@@ -29,9 +29,8 @@ COPY gradle gradle
 RUN --mount=type=cache,target=/root/.gradle \
     ./gradlew --no-daemon dependencies > /dev/null
 COPY src src
-ARG VERSION=0.0.1-SNAPSHOT
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon bootJar -Pversion="$VERSION" \
+    ./gradlew --no-daemon bootJar \
     && cp build/libs/*[!n].jar /app/app.jar
 
 # ----- prod: imagen final mínima (solo JRE, no-root) -----

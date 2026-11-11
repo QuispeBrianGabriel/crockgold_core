@@ -1,0 +1,102 @@
+/*
+ * Versionado: gradle.properties como unica fuente de verdad.
+ * Esta solo escribe la versión y crea el commit.
+ *
+ *   ./gradlew bumpPatch          1.2.3 -> 1.2.4
+ *   ./gradlew bumpMinor          1.2.3 -> 1.3.0
+ *   ./gradlew bumpMajor          1.2.3 -> 2.0.0
+ *   ./gradlew bumpMinor -Ppush   además hace push de la rama actual
+ */
+
+import javax.inject.Inject
+
+abstract class BumpVersion extends DefaultTask {
+
+	@Input
+	abstract Property<String> getPart()
+
+	@Input
+	abstract Property<String> getCurrentVersion()
+
+	@Input
+	abstract Property<Boolean> getPush()
+
+	@Internal
+	abstract RegularFileProperty getPropertiesFile()
+
+	@Inject
+	abstract ExecOperations getExecOps()
+
+	@TaskAction
+	void bump() {
+		def current = currentVersion.get()
+		def matcher = current =~ /^(\d+)\.(\d+)\.(\d+)$/
+		if (!matcher.matches()) {
+			throw new GradleException("La versión actual '${current}' no es MAJOR.MINOR.PATCH")
+		}
+		int major = matcher.group(1) as int
+		int minor = matcher.group(2) as int
+		int patch = matcher.group(3) as int
+
+		String next
+		switch (part.get()) {
+			case 'major': next = "${major + 1}.0.0"; break
+			case 'minor': next = "${major}.${minor + 1}.0"; break
+			default: next = "${major}.${minor}.${patch + 1}"
+		}
+		def tag = "v${next}"
+		def file = propertiesFile.get().asFile
+		def dir = file.parentFile
+
+		def branch = git(dir, 'rev-parse', '--abbrev-ref', 'HEAD')
+		if (branch == 'main') {
+			throw new GradleException('main está protegida: crea una rama (ej. git switch -c release/' + tag + ') y vuelve a ejecutar.')
+		}
+		if (git(dir, 'status', '--porcelain', '--', file.name)) {
+			throw new GradleException("${file.name} tiene cambios sin commitear.")
+		}
+		if (git(dir, 'tag', '--list', tag)) {
+			throw new GradleException("El tag ${tag} ya existe.")
+		}
+
+		def lines = file.readLines('UTF-8')
+		def matches = lines.findIndexValues { it ==~ /version\s*=.*/ }
+		if (matches.size() != 1) {
+			throw new GradleException("Se esperaba exactamente una línea 'version=' en ${file.name}, hay ${matches.size()}.")
+		}
+		lines[matches[0] as int] = "version=${next}".toString()
+		file.setText(lines.join('\n') + '\n', 'UTF-8')
+
+		// "-- <archivo>" commitea solo ese archivo aunque haya otros cambios en el índice.
+		git(dir, 'commit', '--quiet', '-m', "chore(release): ${tag}", '--', file.name)
+		logger.lifecycle("Versión ${current} -> ${next} (commit 'chore(release): ${tag}' en ${branch})")
+
+		if (push.get()) {
+			git(dir, 'push', '--set-upstream', 'origin', 'HEAD')
+			logger.lifecycle("Rama ${branch} publicada. Abre el PR a main: al mergearlo se publica ${tag}.")
+		} else {
+			logger.lifecycle("Siguiente paso: git push -u origin ${branch} y abrir el PR a main. Al mergearlo se publica ${tag}.")
+		}
+	}
+
+	private String git(File dir, String... args) {
+		def out = new ByteArrayOutputStream()
+		execOps.exec {
+			it.workingDir = dir
+			it.commandLine(['git'] + args.toList())
+			it.standardOutput = out
+		}
+		return out.toString('UTF-8').trim()
+	}
+}
+
+['patch', 'minor', 'major'].each { part ->
+	tasks.register("bump${part.capitalize()}", BumpVersion) {
+		group = 'release'
+		description = "Incrementa la versión ${part.toUpperCase()} en gradle.properties y crea el commit de release (-Ppush para publicar la rama)."
+		it.part = part
+		currentVersion = project.version.toString()
+		push = project.hasProperty('push')
+		propertiesFile = rootProject.layout.projectDirectory.file('gradle.properties')
+	}
+}

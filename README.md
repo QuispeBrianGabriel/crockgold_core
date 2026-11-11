@@ -1,7 +1,6 @@
 # Crockgold Core
 
-[![Pipeline](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml/badge.svg)](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml) [![Coverage](https://codecov.io/gh/quispebriangabriel/crockgold_core/graph/badge.svg)](https://codecov.io/gh/quispebriangabriel/crockgold_core)
-
+[![Pipeline](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml/badge.svg)](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml)
 **Crockgold Core** es el motor fundamental diseñado para gobernar, proteger y analizar economías virtuales en videojuegos y mundos digitales. 
 
 ## El Problema
@@ -17,3 +16,16 @@ Crockgold actúa como una autoridad económica independiente y altamente segura 
 
 ## Visión
 Proporcionar a los creadores una columna vertebral económica sólida, predecible y de grado industrial, permitiéndoles concentrarse por completo en el diseño de experiencias de juego mientras Crockgold se encarga de la precisión matemática, la seguridad y la consistencia del patrimonio digital.
+
+## Versionado y release
+La versión vive en un único lugar: `gradle.properties`. No se edita a mano ni se crean tags a mano.
+
+```bash
+git switch -c release/siguiente
+./gradlew bumpPatch   # o bumpMinor / bumpMajor; añade -Ppush para publicar la rama
+git push -u origin HEAD
+```
+
+Al mergear el PR a `main`, el workflow `Release` lee esa versión, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:<versión>` y crea el tag `v<versión>` con su GitHub Release.
+
+La cobertura (JaCoCo) se imprime al ejecutar `./gradlew check` y aparece en el resumen de cada ejecución del pipeline; el reporte HTML queda en `build/reports/jacoco/test/html`.
