@@ -50,48 +50,6 @@ tasks.named('test') {
 	finalizedBy 'jacocoTestReport'
 }
 
-tasks.named('jacocoTestReport') {
-	reports {
-		csv.required = true
-	}
-	// Resumen de cobertura sin servicios externos: consola y, en CI, el summary del job.
-	def csvReport = reports.csv.outputLocation
-	doLast {
-		def totals = [INSTRUCTION: [0, 0], BRANCH: [0, 0], LINE: [0, 0]]
-		def rows = csvReport.get().asFile.readLines()
-		def header = rows.head().split(',').toList()
-		rows.tail().each { row ->
-			def cols = row.split(',')
-			totals.each { name, t ->
-				t[0] += cols[header.indexOf(name + '_COVERED')] as int
-				t[1] += cols[header.indexOf(name + '_MISSED')] as int
-			}
-		}
-		def pct = { t -> t[0] + t[1] == 0 ? 'n/a' : String.format(Locale.ROOT, '%.1f%%', 100.0d * t[0] / (t[0] + t[1])) }
-		def labels = [INSTRUCTION: 'Instrucciones', BRANCH: 'Ramas', LINE: 'Líneas']
-		logger.lifecycle('Cobertura: ' + totals.collect { name, t -> "${labels[name]} ${pct(t)}" }.join(' | '))
-		def summary = System.getenv('GITHUB_STEP_SUMMARY')
-		if (summary) {
-			new File(summary) << '### Cobertura (JaCoCo)\n\n| Métrica | Cobertura | Cubiertas | Total |\n|---|---:|---:|---:|\n' +
-				totals.collect { name, t -> "| ${labels[name]} | ${pct(t)} | ${t[0]} | ${t[0] + t[1]} |" }.join('\n') + '\n'
-		}
-	}
-}
-
-tasks.named('jacocoTestCoverageVerification') {
-	violationRules {
-		rule {
-			limit {
-				minimum = 0.0
-			}
-		}
-	}
-}
-
-tasks.named('check') {
-	dependsOn 'jacocoTestCoverageVerification'
-}
-
 spotless {
 	java {
 		palantirJavaFormat()
