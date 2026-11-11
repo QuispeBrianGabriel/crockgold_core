@@ -75,6 +75,10 @@ semver {
 	releaseTagNameFormat = 'v%s'
 }
 
+if (project.version == 'unspecified') {
+	version = semver.version
+}
+
 spotless {
 	java {
 		palantirJavaFormat()
