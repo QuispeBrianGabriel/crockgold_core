@@ -17,15 +17,18 @@ Crockgold actúa como una autoridad económica independiente y altamente segura 
 ## Visión
 Proporcionar a los creadores una columna vertebral económica sólida, predecible y de grado industrial, permitiéndoles concentrarse por completo en el diseño de experiencias de juego mientras Crockgold se encarga de la precisión matemática, la seguridad y la consistencia del patrimonio digital.
 
-## Versionado y release
-La versión vive en un único lugar: `gradle.properties`. No se edita a mano ni se crean tags a mano.
+## Flujo de trabajo, versionado y release
+Todo se deriva de los commits, que siguen [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). Nadie edita versiones, tags ni changelogs a mano.
 
-```bash
-git switch -c release/siguiente
-./gradlew bumpPatch   # o bumpMinor / bumpMajor; añade -Ppush para publicar la rama
-git push -u origin HEAD
-```
+1. **Desarrollo:** se abre un PR a `main`. Su título y descripción se generan solos a partir de los commits.
+2. **PR de release:** tras cada merge con commits `feat` o `fix`, [release-please](https://github.com/googleapis/release-please) abre o actualiza un PR `chore(main): release X.Y.Z` con la versión (`gradle.properties`) y el `CHANGELOG.md`.
+3. **Publicación:** al mergear ese PR se crean el tag `vX.Y.Z` y el GitHub Release, y se publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:<versión>`.
 
-Al mergear el PR a `main`, el workflow `Release` lee esa versión, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:<versión>` y crea el tag `v<versión>` con su GitHub Release.
+| Commit | Efecto en la versión |
+|---|---|
+| `fix: …` | patch |
+| `feat: …` | minor |
+| `feat!: …` o `BREAKING CHANGE:` | major (minor mientras la versión sea 0.x) |
+| `docs`, `ci`, `build`, `chore`, `refactor`, `test` | no generan release |
 
 La cobertura (JaCoCo) se imprime al ejecutar `./gradlew check` y aparece en el resumen de cada ejecución del pipeline; el reporte HTML queda en `build/reports/jacoco/test/html`.
