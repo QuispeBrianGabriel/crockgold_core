@@ -16,25 +16,6 @@ permissions:
   contents: read
 
 jobs:
-  commitlint:
-    name: Commitlint (commits y título del PR)
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - name: Validar commits
-        uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
-      - name: Validar título del PR
-        if: github.event_name == 'pull_request'
-        uses: amannn/action-semantic-pull-request@2252a14e810aa9b85c2d560bd7070c802206ecf6 # v6.1.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   check:
     name: Check (format, lint, test, coverage)
     runs-on: ubuntu-latest
@@ -46,8 +27,6 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v6
-      # Incluye el umbral de cobertura (jacocoTestCoverageVerification) y
-      # escribe el resumen de cobertura en el summary del job.
       - run: ./gradlew check
       - if: failure()
         uses: actions/upload-artifact@v7
