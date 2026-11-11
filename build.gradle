@@ -8,7 +8,6 @@ plugins {
 }
 
 group = 'com.crockgold'
-apply from: 'gradle/release.gradle'
 
 java {
 	toolchain {
