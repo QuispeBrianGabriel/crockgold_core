@@ -1,10 +1,15 @@
 version: 2
 
+# Un único PR mensual por ecosistema. Los prefijos build/ci no generan release:
+# las actualizaciones salen con el siguiente release de feat/fix.
 updates:
   - package-ecosystem: gradle
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      gradle:
+        patterns: ["*"]
     commit-message:
       prefix: build
       include: scope
@@ -12,7 +17,10 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
     commit-message:
       prefix: ci
       include: scope
@@ -20,7 +28,10 @@ updates:
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      docker:
+        patterns: ["*"]
     commit-message:
       prefix: build
       include: scope
@@ -28,7 +39,10 @@ updates:
   - package-ecosystem: docker-compose
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
+    groups:
+      docker-compose:
+        patterns: ["*"]
     commit-message:
       prefix: build
       include: scope
