@@ -1,9 +1,5 @@
 name: Release
 
-# Cada push a main ejecuta release-please:
-#   - con commits feat/fix nuevos, abre o actualiza el PR de release
-#     (versión en gradle.properties + CHANGELOG.md);
-#   - al mergear ese PR, crea el tag y el GitHub Release, y se publica la imagen.
 on:
   push:
     branches: [main]
