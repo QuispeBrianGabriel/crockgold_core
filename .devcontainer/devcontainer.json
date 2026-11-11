@@ -9,9 +9,11 @@
   ],
   "workspaceFolder": "/app",
   "mounts": [
-    "source=${localEnv:HOME}/.claude,target=/home/ubuntu/.claude,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.claude.json,target=/home/ubuntu/.claude.json,type=bind,consistency=cached"
+    "source=claude-config,target=/home/ubuntu/.claude,type=volume"
   ],
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/ubuntu/.claude"
+  },
   "remoteUser": "ubuntu",
   "shutdownAction": "stopCompose",
   "forwardPorts": [

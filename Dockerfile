@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# ----- base: JDK 25 + herramientas comunes -----
-FROM eclipse-temurin:25-jdk AS base
+# ----- dev: entorno de desarrollo (Dev Container / compose) -----
+FROM eclipse-temurin:25-jdk AS dev
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
@@ -11,28 +11,26 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-
-# ----- dev: entorno de desarrollo (Dev Container / compose) -----
-FROM base AS dev
 ENV GRADLE_USER_HOME=/home/ubuntu/.gradle
-RUN mkdir -p "$GRADLE_USER_HOME" /app \
+RUN mkdir -p "$GRADLE_USER_HOME" /home/ubuntu/.claude \
     && chown -R ubuntu:ubuntu \
         "$GRADLE_USER_HOME" \
+        /home/ubuntu/.claude \
         /app
 USER ubuntu
 EXPOSE 8080
 CMD ["sleep", "infinity"]
 
 # ----- build: empaquetado del JAR -----
-FROM base AS build
+FROM eclipse-temurin:25-jdk AS build
+WORKDIR /app
 COPY gradlew settings.gradle build.gradle gradle.properties ./
 COPY gradle gradle
 RUN --mount=type=cache,target=/root/.gradle \
     ./gradlew --no-daemon dependencies > /dev/null
 COPY src src
-ARG VERSION=0.0.1-SNAPSHOT
 RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon bootJar -x test -Pversion="$VERSION" \
+    ./gradlew --no-daemon bootJar \
     && cp build/libs/*[!n].jar /app/app.jar
 
 # ----- prod: imagen final mínima (solo JRE, no-root) -----

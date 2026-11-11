@@ -2,12 +2,12 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-*"
+    branches: [main]
+    paths: [gradle.properties]
+  workflow_dispatch:
 
 concurrency:
-  group: release-${{ github.ref_name }}
+  group: release
   cancel-in-progress: false
 
 permissions:
@@ -15,34 +15,57 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  PRERELEASE: ${{ contains(github.ref_name, '-') }}
 
 jobs:
-  verify:
-    name: Verify tag is on main
+  version:
+    name: Resolve version
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      release: ${{ steps.version.outputs.release }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - run: |
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
-            echo "::error::El tag ${GITHUB_REF_NAME} no apunta a un commit de main."
+      - id: version
+        run: |
+          version="$(sed -n 's/^version=//p' gradle.properties)"
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error file=gradle.properties::'$version' no es una versión MAJOR.MINOR.PATCH"
             exit 1
           fi
+          tag="v$version"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          if git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
+            echo "::notice::$tag ya está publicado; no hay nada que hacer."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          latest="$(git tag --list 'v[0-9]*' | sort -V | tail -n 1)"
+          if [[ -n "$latest" && "$(printf '%s\n%s\n' "$latest" "$tag" | sort -V | tail -n 1)" != "$tag" ]]; then
+            echo "::error file=gradle.properties::$tag es anterior al último release ($latest)"
+            exit 1
+          fi
+          echo "release=true" >> "$GITHUB_OUTPUT"
 
   check:
     name: Quality gate
-    needs: verify
+    needs: version
+    if: needs.version.outputs.release == 'true'
     uses: ./.github/workflows/pipeline.yml
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
+      pull-requests: read
 
   image:
     name: Build & publish image
-    needs: check
+    needs: [version, check]
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -51,6 +74,8 @@ jobs:
     outputs:
       image: ${{ steps.vars.outputs.image }}
       digest: ${{ steps.build.outputs.digest }}
+    env:
+      TAG: ${{ needs.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
 
@@ -62,9 +87,9 @@ jobs:
         with:
           images: ${{ steps.vars.outputs.image }}
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref_name, 'v0.') }}
+            type=semver,pattern={{version}},value=${{ env.TAG }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.TAG }}
+            type=semver,pattern={{major}},value=${{ env.TAG }},enable=${{ !startsWith(env.TAG, 'v0.') }}
             type=sha,format=long
           labels: |
             org.opencontainers.image.title=Crockgold Core
@@ -91,58 +116,52 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: true
-          build-args: VERSION=${{ steps.meta.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
-          provenance: mode=max
+          provenance: false
           sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - if: ${{ !github.event.repository.private }}
-        uses: actions/attest-build-provenance@v4
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ steps.vars.outputs.image }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
   release:
-    name: GitHub Release
-    needs: image
+    name: Tag & GitHub Release
+    needs: [version, image]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
     steps:
       - env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.version.outputs.tag }}
           IMAGE: ${{ needs.image.outputs.image }}
           DIGEST: ${{ needs.image.outputs.digest }}
-          PRIVATE: ${{ github.event.repository.private }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          VERIFY=""
-          if [[ "$PRIVATE" != "true" ]]; then
-            VERIFY="Verificar procedencia: \`gh attestation verify oci://${IMAGE}@${DIGEST} --repo ${GITHUB_REPOSITORY}\`"
-          fi
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --verify-tag \
+            --target "$GITHUB_SHA" \
             --generate-notes \
-            $([[ "$PRERELEASE" == "true" ]] && echo --prerelease || echo --latest) \
+            --latest \
             --notes "$(cat <<EOF
           ## Imagen Docker
 
           \`\`\`
-          docker pull ${IMAGE}:${VERSION}
+          docker pull ${IMAGE}:${TAG#v}
           \`\`\`
 
           | | |
           |---|---|
           | Digest | \`${DIGEST}\` |
           | Commit | ${GITHUB_SHA} |
-          | Tags | \`${VERSION}\`$([[ "$PRERELEASE" == "true" ]] || echo ', `latest`') |
+          | Tags | \`${TAG#v}\`, \`latest\` |
 
-          ${VERIFY}
+          Verificar procedencia: \`gh attestation verify oci://${IMAGE}@${DIGEST} --repo ${GITHUB_REPOSITORY}\`
           EOF
           )"
