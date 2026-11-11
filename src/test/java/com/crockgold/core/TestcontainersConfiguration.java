@@ -9,6 +9,7 @@ import org.testcontainers.utility.DockerImageName;
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
 
+    // Dependabot no actualiza esta imagen: mantener alineada con compose.yml.
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgresContainer() {
