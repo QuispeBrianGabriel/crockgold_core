@@ -21,10 +21,8 @@ Proporcionar a los creadores una columna vertebral económica sólida, predecibl
 ## Integración continua y releases
 Se trabaja directo sobre `main`, con commits [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). Cada push ejecuta el pipeline (`./gradlew check`: formato, análisis estático, tests y cobertura).
 
-Para publicar una versión:
+Para publicar una versión (ejemplo):
 
 ```sh
 git tag v0.3.0 && git push origin v0.3.0
 ```
-
-El tag repite el pipeline, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:0.3.0` (y `latest`) y crea el GitHub Release, con las notas generadas a partir de los commits desde el tag anterior.
