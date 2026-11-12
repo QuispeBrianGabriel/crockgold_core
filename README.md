@@ -20,12 +20,10 @@ Proporcionar a los creadores una columna vertebral económica sólida, predecibl
 ## Integración continua y releases
 Se trabaja directo sobre `main`, con commits [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). Cada push ejecuta el pipeline (`./gradlew check`: formato, análisis estático, tests y cobertura).
 
-Para publicar una versión se actualiza `version` en `gradle.properties` y se sube el commit junto con su tag:
+Para publicar una versión:
 
 ```sh
-git commit -am "chore(release): prepare for v0.3.0"
-git tag v0.3.0
-git push --atomic origin main v0.3.0
+./gradlew releasePatch   # o releaseMinor / releaseMajor
 ```
 
-El tag repite el pipeline, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:0.3.0` (y `latest`) y crea el GitHub Release, con las notas generadas a partir de los commits desde el tag anterior.
+Sube `version` en `gradle.properties`, crea el commit `chore(release): prepare for vX.Y.Z 🚀` y el tag `vX.Y.Z`, y pushea ambos. El tag repite el pipeline, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:0.3.0` (y `latest`) y crea el GitHub Release, con las notas generadas a partir de los commits desde el tag anterior.
