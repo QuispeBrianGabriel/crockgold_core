@@ -33,7 +33,7 @@ jobs:
           password: ${{ github.token }}
       - uses: docker/build-push-action@v7.4.0
         with:
-          target: prod
+          file: docker/Dockerfile.prod
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

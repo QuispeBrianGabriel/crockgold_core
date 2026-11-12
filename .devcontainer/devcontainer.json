@@ -1,5 +1,5 @@
 {
-  "dockerComposeFile": "../compose.yml",
+  "dockerComposeFile": "../docker/compose.yml",
   "service": "api",
   "workspaceFolder": "/app",
   "mounts": [

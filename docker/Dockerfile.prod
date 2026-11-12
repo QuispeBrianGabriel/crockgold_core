@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+
+# ----- build: empaquetado del JAR -----
+FROM eclipse-temurin:25-jdk AS build
+WORKDIR /app
+COPY gradlew settings.gradle build.gradle gradle.properties ./
+COPY gradle gradle
+COPY src src
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon bootJar
+
+# ----- prod: imagen final mínima (JRE no-root) -----
+FROM eclipse-temurin:25-jre AS prod
+WORKDIR /app
+COPY --from=build /app/build/libs/*.jar app.jar
+USER ubuntu
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

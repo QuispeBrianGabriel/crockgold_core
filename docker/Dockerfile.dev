@@ -1,0 +1,11 @@
+# syntax=docker/dockerfile:1
+
+# ----- dev: entorno de desarrollo -----
+FROM eclipse-temurin:25-jdk
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git curl postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+USER ubuntu
+RUN mkdir -p /home/ubuntu/.gradle /home/ubuntu/.claude
+WORKDIR /app
+CMD ["sleep", "infinity"]

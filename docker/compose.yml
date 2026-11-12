@@ -1,8 +1,10 @@
+name: crockgold_core
+
 services:
   api:
     build:
       context: .
-      target: dev
+      dockerfile: Dockerfile.dev
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
@@ -13,7 +15,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - .:/app
+      - ..:/app
       - gradle-cache:/home/ubuntu/.gradle
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
