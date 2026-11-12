@@ -61,4 +61,6 @@ apply from: 'gradle/release.gradle'
 
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone.disableWarningsInGeneratedCode = true
+	options.fork = true
+	options.forkOptions.jvmArgs += ['--sun-misc-unsafe-memory-access=allow']
 }
