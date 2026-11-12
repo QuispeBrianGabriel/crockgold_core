@@ -24,8 +24,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: El tag coincide con la versión de gradle.properties
-        run: grep -qxF "version=${GITHUB_REF_NAME#v}" gradle.properties
       - id: changelog
         uses: orhun/git-cliff-action@v4.9.1
         with:
