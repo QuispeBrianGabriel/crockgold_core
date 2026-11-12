@@ -1,9 +1,0 @@
-.git
-.gradle
-.idea
-.vscode
-.devcontainer
-build
-out
-.env
-*.md
