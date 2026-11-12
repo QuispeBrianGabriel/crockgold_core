@@ -12,25 +12,8 @@ jobs:
     permissions:
       contents: read
 
-  notes:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    outputs:
-      content: ${{ steps.changelog.outputs.content }}
-    steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - id: changelog
-        uses: orhun/git-cliff-action@v4.9.1
-        with:
-          args: --latest --strip header
-
   image:
-    needs: [check, notes]
+    needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -56,14 +39,21 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   release:
-    needs: [notes, image]
+    needs: image
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: changelog
+        uses: orhun/git-cliff-action@v4.9.1
+        with:
+          args: --latest --strip header
       - run: gh release create "$GITHUB_REF_NAME" --verify-tag --notes "$NOTES"
         env:
           GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          NOTES: ${{ needs.notes.outputs.content }}
+          NOTES: ${{ steps.changelog.outputs.content }}
