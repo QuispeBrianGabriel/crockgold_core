@@ -19,6 +19,10 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	mockitoAgent
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
@@ -43,10 +47,14 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	errorprone 'com.google.errorprone:error_prone_core:2.52.0'
+	mockitoAgent('org.mockito:mockito-core') { transitive = false }
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	jvmArgumentProviders.add({ ["-javaagent:${configurations.mockitoAgent.singleFile}"] } as CommandLineArgumentProvider)
+	jvmArgs '--enable-native-access=ALL-UNNAMED'
+	jvmArgs '-Xshare:off'
 	finalizedBy 'jacocoTestReport'
 }
 
