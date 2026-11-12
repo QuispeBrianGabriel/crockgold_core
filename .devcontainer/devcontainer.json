@@ -16,29 +16,12 @@
   },
   "remoteUser": "ubuntu",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [
-    8080,
-    5432
-  ],
-  "portsAttributes": {
-    "8080": {
-      "label": "API",
-      "onAutoForward": "notify"
-    },
-    "5432": {
-      "label": "PostgreSQL",
-      "onAutoForward": "silent"
-    }
-  },
   "postCreateCommand": "git config --global --add safe.directory /app && ./gradlew clean classes",
   "customizations": {
     "vscode": {
       "extensions": [
-        "vscjava.vscode-java-pack",
-        "vscjava.vscode-gradle",
-        "vmware.vscode-boot-dev-pack",
-        "ms-azuretools.vscode-docker",
-        "cweijan.vscode-postgresql-client2",
+        "redhat.java",
+        "vmware.vscode-spring-boot",
         "redhat.vscode-yaml",
         "EditorConfig.EditorConfig",
         "anthropic.claude-code"
