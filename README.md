@@ -23,7 +23,7 @@ Se trabaja directo sobre `main`, con commits [Conventional Commits](https://www.
 Para publicar una versión:
 
 ```sh
-./gradlew releasePatch   # o releaseMinor / releaseMajor
+git tag v0.3.0 && git push origin v0.3.0
 ```
 
-Sube `version` en `gradle.properties`, crea el commit `chore(release): prepare for vX.Y.Z 🚀` y el tag `vX.Y.Z`, y pushea ambos. El tag repite el pipeline, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:0.3.0` (y `latest`) y crea el GitHub Release, con las notas generadas a partir de los commits desde el tag anterior.
+El tag repite el pipeline, publica la imagen `ghcr.io/quispebriangabriel/crockgold_core:0.3.0` (y `latest`) y crea el GitHub Release, con las notas generadas a partir de los commits desde el tag anterior.

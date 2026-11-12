@@ -65,5 +65,3 @@ spotless {
 		formatAnnotations()
 	}
 }
-
-apply from: 'gradle/release.gradle'
