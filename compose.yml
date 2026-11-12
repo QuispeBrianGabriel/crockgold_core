@@ -4,23 +4,22 @@ services:
       context: .
       target: dev
     environment:
-      - SPRING_DATASOURCE_URL
-      - SPRING_DATASOURCE_USERNAME
-      - SPRING_DATASOURCE_PASSWORD
-      - TESTCONTAINERS_HOST_OVERRIDE
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - .:/app:cached
+      - .:/app
       - gradle-cache:/home/ubuntu/.gradle
       - /var/run/docker.sock:/var/run/docker.sock
     group_add:
       - "${DOCKER_GID:-999}"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     init: true
 
   db:
@@ -33,12 +32,6 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
-    healthcheck:
-      test: pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    restart: unless-stopped
 
 volumes:
   gradle-cache:
