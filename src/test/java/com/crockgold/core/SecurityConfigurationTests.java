@@ -1,5 +1,6 @@
 package com.crockgold.core;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
@@ -37,5 +39,12 @@ class SecurityConfigurationTests {
                 .andExpect(status().isNotFound())
                 .andExpect(request().sessionAttributeDoesNotExist("SPRING_SECURITY_CONTEXT"))
                 .andExpect(header().doesNotExist("Set-Cookie"));
+    }
+
+    @Test
+    void startupFailsWithoutConfiguredPassword() {
+        assertThatIllegalStateException()
+                .isThrownBy(() -> new SecurityConfiguration().apiUser(new SecurityProperties()))
+                .withMessageContaining("SPRING_SECURITY_USER_PASSWORD");
     }
 }
