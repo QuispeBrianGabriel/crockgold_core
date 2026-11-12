@@ -57,6 +57,8 @@ spotless {
 	}
 }
 
+apply from: 'gradle/release.gradle'
+
 tasks.withType(JavaCompile).configureEach {
 	options.errorprone.disableWarningsInGeneratedCode = true
 }

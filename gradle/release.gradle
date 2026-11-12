@@ -1,0 +1,23 @@
+// ./gradlew releasePatch | releaseMinor | releaseMajor
+// Sube la versión, la commitea, crea el tag y pushea ambos: el tag dispara release.yml.
+def git = { String... args ->
+	def p = ['git', *args].execute(null, rootDir)
+	p.waitForProcessOutput(System.out, System.err)
+	if (p.exitValue()) throw new GradleException("git ${args.join(' ')} falló")
+}
+
+['patch', 'minor', 'major'].each { part ->
+	tasks.register("release${part.capitalize()}") {
+		group = 'release'
+		description = "Publica una versión ${part}."
+		doLast {
+			def (major, minor, patch) = version.tokenize('.')*.toInteger()
+			def next = [patch: "$major.$minor.${patch + 1}", minor: "$major.${minor + 1}.0", major: "${major + 1}.0.0"][part]
+			def props = file('gradle.properties')
+			props.text = props.text.replace("version=$version", "version=$next")
+			git 'commit', '-m', "chore(release): prepare for v$next 🚀", 'gradle.properties'
+			git 'tag', "v$next"
+			git 'push', '--atomic', 'origin', 'HEAD', "v$next"
+		}
+	}
+}
