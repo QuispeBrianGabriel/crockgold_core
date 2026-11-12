@@ -1,6 +1,16 @@
 # Crockgold Core
 
-[![Pipeline](https://github.com/quispebriangabriel/crockgold_core/workflows/Pipeline/badge.svg)](https://github.com/quispebriangabriel/crockgold_core/actions/workflows/pipeline.yml)
+[![Pipeline](https://img.shields.io/github/actions/workflow/status/QuispeBrianGabriel/crockgold_core/pipeline.yml?branch=main&label=pipeline&logo=githubactions&logoColor=white)](https://github.com/QuispeBrianGabriel/crockgold_core/actions/workflows/pipeline.yml)
+[![Coverage](https://codecov.io/gh/QuispeBrianGabriel/crockgold_core/branch/main/graph/badge.svg)](https://app.codecov.io/gh/QuispeBrianGabriel/crockgold_core)
+[![Release](https://img.shields.io/github/v/release/QuispeBrianGabriel/crockgold_core?logo=github)](https://github.com/QuispeBrianGabriel/crockgold_core/releases/latest)
+[![Release date](https://img.shields.io/github/release-date/QuispeBrianGabriel/crockgold_core)](https://github.com/QuispeBrianGabriel/crockgold_core/releases)
+[![Last commit](https://img.shields.io/github/last-commit/QuispeBrianGabriel/crockgold_core)](https://github.com/QuispeBrianGabriel/crockgold_core/commits/main)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/QuispeBrianGabriel/crockgold_core)](https://github.com/QuispeBrianGabriel/crockgold_core/pulse)
+[![License](https://img.shields.io/github/license/QuispeBrianGabriel/crockgold_core)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-25-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/25/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Conventional Commits](https://img.shields.io/badge/Conventional_Commits-1.0.0-FE5196?logo=conventionalcommits&logoColor=white)](https://www.conventionalcommits.org/es/v1.0.0/)
 
 **Crockgold Core** es el motor fundamental diseñado para gobernar, proteger y analizar economías virtuales en videojuegos y mundos digitales. 
 

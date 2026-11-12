@@ -14,7 +14,7 @@ Se requiere que una sola orden indique y valide la calidad del código, que func
 - **Formato**: Spotless con Palantir Java Format.
 - **Análisis estático**: Error Prone, durante la compilación.
 - **Tests**: JUnit.
-- **Cobertura**: JaCoCo mide y el plugin `jacocolog` imprime el resumen en la consola al terminar los tests (sin informe HTML).
+- **Cobertura**: JaCoCo mide y el plugin `jacocolog` imprime el resumen en la consola al terminar los tests (sin informe HTML). El Pipeline envía el XML a Codecov para el historial y el badge.
 
 **Extra**: `.editorconfig` fija lo básico para cualquier editor.
 

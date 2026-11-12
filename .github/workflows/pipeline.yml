@@ -21,6 +21,10 @@ jobs:
           java-version: 25
           cache: gradle
       - run: ./gradlew check
+      - uses: codecov/codecov-action@v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/jacoco/test/jacocoTestReport.xml
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7.0.2
         with:

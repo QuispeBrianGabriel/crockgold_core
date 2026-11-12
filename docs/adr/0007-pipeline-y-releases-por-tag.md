@@ -13,6 +13,7 @@ Se quiere validar cada cambio y publicar versiones con el menor número de pasos
 
 - Se trabaja directo sobre `main`, con mensajes en formato *Conventional Commits*.
 - Todo push a cualquier rama ejecuta el workflow **Pipeline**.
+- El Pipeline envía la cobertura a Codecov con el secret `CODECOV_TOKEN`; si el envío falla, solo avisa.
 
 **Publicar una versión**
 
