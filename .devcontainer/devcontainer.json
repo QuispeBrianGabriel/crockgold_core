@@ -1,12 +1,6 @@
 {
-  "dockerComposeFile": [
-    "../compose.yml"
-  ],
+  "dockerComposeFile": "../compose.yml",
   "service": "api",
-  "runServices": [
-    "api",
-    "db"
-  ],
   "workspaceFolder": "/app",
   "mounts": [
     "source=claude-config,target=/home/ubuntu/.claude,type=volume"
@@ -14,9 +8,7 @@
   "containerEnv": {
     "CLAUDE_CONFIG_DIR": "/home/ubuntu/.claude"
   },
-  "remoteUser": "ubuntu",
-  "shutdownAction": "stopCompose",
-  "postCreateCommand": "git config --global --add safe.directory /app && ./gradlew clean classes",
+  "postCreateCommand": "./gradlew classes",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -29,12 +21,10 @@
       "settings": {
         "java.jdt.ls.java.home": "/opt/java/openjdk",
         "java.configuration.updateBuildConfiguration": "automatic",
-        "java.import.gradle.wrapper.enabled": true,
         "editor.formatOnSave": true,
         "[java]": {
           "editor.formatOnSave": false
         },
-        "files.eol": "\n",
         "files.exclude": {
           "**/.gradle": true,
           "**/build": true
