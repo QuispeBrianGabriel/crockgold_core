@@ -52,10 +52,12 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	jvmArgumentProviders.add({ ["-javaagent:${configurations.mockitoAgent.singleFile}"] } as CommandLineArgumentProvider)
-	jvmArgs '--enable-native-access=ALL-UNNAMED'
-	jvmArgs '-Xshare:off'
+	jvmArgs "-javaagent:${configurations.mockitoAgent.asPath}", '-Xshare:off'
 	finalizedBy 'jacocoTestReport'
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.forkOptions.jvmArgs += ['--sun-misc-unsafe-memory-access=allow']
 }
 
 spotless {
@@ -66,9 +68,3 @@ spotless {
 }
 
 apply from: 'gradle/release.gradle'
-
-tasks.withType(JavaCompile).configureEach {
-	options.errorprone.disableWarningsInGeneratedCode = true
-	options.fork = true
-	options.forkOptions.jvmArgs += ['--sun-misc-unsafe-memory-access=allow']
-}
