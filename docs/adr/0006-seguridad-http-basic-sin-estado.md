@@ -17,11 +17,13 @@ La API no debe quedar abierta, pero el estado de salud del servicio tiene que po
 ## Consecuencias
 
 - Todo endpoint queda protegido por defecto, abrirlo requiere explicitarlo.
+- La aplicación no arranca sin `SPRING_SECURITY_USER_PASSWORD`: no existe contraseña por defecto ni generada.
 - El servidor no guarda nada entre una petición y la siguiente.
 - Comportamiento cubierto por tests:
     - Salud pública.
     - `401` sin credenciales.
     - Ausencia de sesión y de cookie.
+    - Fallo de arranque sin contraseña configurada.
 
 ## Dónde verlo
 
