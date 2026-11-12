@@ -7,32 +7,24 @@ on:
 permissions: {}
 
 jobs:
-  gate:
+  pipeline:
+    name: Wait for pipeline
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 25
     permissions:
       actions: read
-    outputs:
-      passed: ${{ steps.lookup.outputs.passed }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
-      - id: lookup
+      - name: Wait for the pipeline of this commit and fail if it failed
         run: |
-          n=$(gh run list --workflow pipeline.yml --commit "$GITHUB_SHA" --status success --json databaseId --jq length)
-          echo "passed=$([ "$n" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-
-  check:
-    needs: gate
-    if: needs.gate.outputs.passed != 'true'
-    uses: ./.github/workflows/pipeline.yml
-    permissions:
-      contents: read
+          run_id=$(gh run list --workflow pipeline.yml --commit "$GITHUB_SHA" --limit 1 --json databaseId --jq '.[0].databaseId')
+          gh run watch "$run_id" --exit-status
 
   image:
-    needs: [gate, check]
-    if: ${{ !cancelled() && !failure() }}
+    name: Publish image
+    needs: pipeline
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -58,6 +50,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   release:
+    name: Create GitHub release
     needs: image
     runs-on: ubuntu-latest
     timeout-minutes: 5

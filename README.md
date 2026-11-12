@@ -24,5 +24,5 @@ Se trabaja directo sobre `main`, con commits [Conventional Commits](https://www.
 Para publicar una versión (ejemplo):
 
 ```sh
-git tag v0.3.0 && git push origin v0.3.0
+git tag v0.3.0 && git push origin main v0.3.0
 ```
