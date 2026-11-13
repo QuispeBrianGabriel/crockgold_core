@@ -27,11 +27,8 @@ Crockgold actúa como una autoridad económica independiente y altamente segura 
 ## Visión
 Proporcionar a los creadores una columna vertebral económica sólida, predecible y de grado industrial, permitiéndoles concentrarse por completo en el diseño de experiencias de juego mientras Crockgold se encarga de la precisión matemática, la seguridad y la consistencia del patrimonio digital.
 
-## Integración continua y releases
-Se trabaja directo sobre `main`, con commits [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). Cada push ejecuta el pipeline (`./gradlew check`: formato, análisis estático, tests y cobertura).
+## Desarrollo
 
-Para publicar una versión (ejemplo):
-
-```sh
-git tag v0.3.0 && git push origin main v0.3.0
-```
+- Para empezar: `make setup` y abrir el Dev Container. Detalle en [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+- Toda la documentación parte del índice [docs/README.md](docs/README.md).
+- Se trabaja directo sobre `main` con [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/). Cada push ejecuta el Pipeline, que en local es `make check`.
