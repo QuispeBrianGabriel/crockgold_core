@@ -10,3 +10,7 @@
 | [0006](0006-seguridad-http-basic-sin-estado.md) | API sin estado con HTTP Basic | Aceptado |
 | [0007](0007-pipeline-y-releases-por-tag.md) | Pipeline en cada push y releases por tag | Aceptado |
 | [0008](0008-despliegue-con-railway.md) | Despliegue en producción con Railway | Aceptado |
+| [0009](0009-interfaz-del-desarrollador-en-makefile.md) | Interfaz del desarrollador en un `Makefile`, lógica en `scripts/` | Aceptado |
+| [0010](0010-documentacion-con-claude-code.md) | Documentación mantenida con Claude Code | Aceptado |
+
+Un ADR nuevo se crea con `/docs-write`. Uno aceptado no se reescribe: lo reemplaza otro.

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./docker/.env)",
+      "Bash(make release*)",
+      "Bash(scripts/release.sh*)",
+      "Bash(./scripts/release.sh*)",
+      "Bash(git tag *)",
+      "Bash(make db-restore*)",
+      "Bash(scripts/db-restore.sh*)",
+      "Bash(./scripts/db-restore.sh*)",
+      "Bash(make db-reset*)",
+      "Bash(scripts/db-reset.sh*)",
+      "Bash(./scripts/db-reset.sh*)",
+      "Bash(pg_restore *)",
+      "Bash(dropdb *)"
+    ],
+    "ask": [
+      "Bash(git push *)"
+    ]
+  }
+}
