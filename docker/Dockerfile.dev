@@ -3,7 +3,7 @@
 # ----- dev: entorno de desarrollo -----
 FROM eclipse-temurin:25-jdk
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git curl postgresql-client \
+    && apt-get install -y --no-install-recommends git curl make tree postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 USER ubuntu
 RUN mkdir -p /home/ubuntu/.gradle /home/ubuntu/.claude

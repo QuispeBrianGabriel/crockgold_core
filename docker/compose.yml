@@ -12,10 +12,6 @@ services:
       SPRING_SECURITY_USER_NAME: ${SPRING_SECURITY_USER_NAME}
       SPRING_SECURITY_USER_PASSWORD: ${SPRING_SECURITY_USER_PASSWORD}
       TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
-      PGHOST: db
-      PGDATABASE: ${POSTGRES_DB}
-      PGUSER: ${POSTGRES_USER}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
