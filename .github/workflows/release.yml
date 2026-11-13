@@ -65,7 +65,7 @@ jobs:
         uses: orhun/git-cliff-action@v4.9.1
         with:
           args: --latest --strip header
-      - run: gh release create "$GITHUB_REF_NAME" --verify-tag --notes "$NOTES"
+      - run: gh release create "$GITHUB_REF_NAME" --title "Release $GITHUB_REF_NAME" --verify-tag --notes "$NOTES"
         env:
           GH_TOKEN: ${{ github.token }}
           NOTES: ${{ steps.changelog.outputs.content }}
