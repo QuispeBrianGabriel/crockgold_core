@@ -57,7 +57,7 @@ tasks.named('test') {
 }
 
 tasks.named('jacocoTestReport') {
-	reports.html.required = false
+	reports.html.required = true
 }
 
 tasks.withType(JavaCompile).configureEach {

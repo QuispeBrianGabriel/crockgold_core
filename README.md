@@ -1,7 +1,6 @@
 # Crockgold Core
 
 [![Pipeline](https://img.shields.io/github/actions/workflow/status/QuispeBrianGabriel/crockgold_core/pipeline.yml?branch=main&label=pipeline&logo=githubactions&logoColor=white)](https://github.com/QuispeBrianGabriel/crockgold_core/actions/workflows/pipeline.yml)
-[![Coverage](https://codecov.io/gh/QuispeBrianGabriel/crockgold_core/branch/main/graph/badge.svg)](https://app.codecov.io/gh/QuispeBrianGabriel/crockgold_core)
 [![Release](https://img.shields.io/github/v/release/QuispeBrianGabriel/crockgold_core?logo=github)](https://github.com/QuispeBrianGabriel/crockgold_core/releases/latest)
 [![Release date](https://img.shields.io/github/release-date/QuispeBrianGabriel/crockgold_core)](https://github.com/QuispeBrianGabriel/crockgold_core/releases)
 [![Last commit](https://img.shields.io/github/last-commit/QuispeBrianGabriel/crockgold_core)](https://github.com/QuispeBrianGabriel/crockgold_core/commits/main)

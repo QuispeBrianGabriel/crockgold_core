@@ -9,6 +9,13 @@
     "CLAUDE_CONFIG_DIR": "/home/ubuntu/.claude"
   },
   "postCreateCommand": "./gradlew classes",
+  "forwardPorts": [8090],
+  "portsAttributes": {
+    "8090": {
+      "label": "Informe de tests (make report)",
+      "onAutoForward": "silent"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
