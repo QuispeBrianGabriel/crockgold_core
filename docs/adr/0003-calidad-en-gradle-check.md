@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Se requiere que una sola orden indique y valide la calidad del código, que funcione igual para cada Dev, facilitando la integración continua.
+Hace falta una sola orden que valide la calidad del código y funcione igual para cada dev y en la integración continua.
 
 ## Decisión
 
@@ -14,19 +14,16 @@ Se requiere que una sola orden indique y valide la calidad del código, que func
 - **Formato**: Spotless con Palantir Java Format.
 - **Análisis estático**: Error Prone, durante la compilación.
 - **Tests**: JUnit.
-- **Cobertura**: JaCoCo mide y el plugin `jacocolog` imprime el resumen en la consola al terminar los tests (sin informe HTML). El Pipeline envía el XML a Codecov para el historial y el badge.
+- **Cobertura**: JaCoCo mide y el plugin `jacocolog` imprime el resumen en la consola.
 
-**Extra**: `.editorconfig` fija lo básico para cualquier editor.
+Además, `.editorconfig` fija lo básico para cualquier editor.
 
 ## Consecuencias
 
-- El pipeline solo ejecuta `./gradlew check`.
-- El código no formateado falla, se arregla con `./gradlew spotlessApply`.
-- El editor no formatea al guardar, el único formato válido es Spotless.
+- El Pipeline solo ejecuta `./gradlew check`. En local es `make check`.
+- El código sin formatear hace fallar el check y se arregla con `make format`.
+- El editor no formatea Java al guardar: el único formato válido es Spotless.
 
 ## Dónde verlo
 
-- `build.gradle`
-- `.editorconfig`
-- `.devcontainer/devcontainer.json`
-- `.github/workflows/pipeline.yml`
+`build.gradle`, `.editorconfig`, `.devcontainer/devcontainer.json` y `.github/workflows/pipeline.yml`.

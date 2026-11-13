@@ -5,32 +5,23 @@
 
 ## Contexto
 
-Se requiere el mismo entorno para cualquiera que abra el proyecto, y una imagen de menor tamaño para desplegar.
+Hace falta el mismo entorno para cualquiera que abra el proyecto y una imagen pequeña para desplegar.
 
 ## Decisión
 
-Todo lo relacionado con Docker vive en la carpeta `docker/`.
+Todo lo relacionado con Docker vive en `docker/`:
 
-- **`Dockerfile.dev`**: entorno de desarrollo con JDK 25, git, curl y el cliente de PostgreSQL.
-- **`compose.yml`**: levanta el servicio `api` (entorno de desarrollo) y `db` (PostgreSQL 18).
-- **`Dockerfile.prod`**: construcción en dos etapas.
-    1. Empaqueta el JAR con el JDK.
-    2. Lleva el JRE y el JAR, y ejecuta con un usuario sin privilegios.
-
-El **Dev Container** de VS Code usa ese mismo `compose.yml`.
+- **`Dockerfile.dev`**: entorno de desarrollo con JDK 25, git, curl, make, tree y el cliente de PostgreSQL.
+- **`compose.yml`**: levanta `api` (entorno de desarrollo) y `db` (PostgreSQL 18). El Dev Container de VS Code usa este mismo archivo.
+- **`Dockerfile.prod`**: dos etapas. La primera empaqueta el JAR con el JDK. La segunda lleva solo el JRE y el JAR, y ejecuta con un usuario sin privilegios.
 
 ## Consecuencias
 
-- Abrir el proyecto en el Dev Container deja listo Java, la base de datos y las extensiones del editor.
+- Abrir el Dev Container deja listos Java, la base de datos y las extensiones del editor.
 - La imagen de producción no contiene Gradle ni el código fuente.
-- Los puertos `8080` y `5432` solo se publican en `127.0.0.1`.
-- Los datos de PostgreSQL y la caché de Gradle se guardan en volúmenes y sobreviven a reinicios.
-- Las variables se leen de `docker/.env`, que no se sube a git; `docker/.env.example` sirve de plantilla.
+- Los datos de PostgreSQL y la caché de Gradle viven en volúmenes y sobreviven a reinicios.
+- Las variables se leen de `docker/.env`, que no se sube a git.
 
 ## Dónde verlo
 
-- `docker/Dockerfile.dev`
-- `docker/Dockerfile.prod`
-- `docker/compose.yml`
-- `docker/.env.example`
-- `.devcontainer/devcontainer.json`
+`docker/` y `.devcontainer/devcontainer.json`.

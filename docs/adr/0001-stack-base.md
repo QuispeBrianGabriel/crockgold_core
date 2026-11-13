@@ -5,24 +5,19 @@
 
 ## Contexto
 
-Crockgold Core es un servicio backend que expone una API HTTP.
-Necesita una base conocida sobre la que construir el resto.
+Crockgold Core es un servicio backend con una API HTTP y necesita una base conocida sobre la que construir.
 
 ## Decisión
 
-- El proyecto es una aplicación **Spring Boot 4.1.2** escrita en **Java 25**.
-- Se construye con **Gradle**, usando el wrapper `gradlew`, Gradle 9.9.0.
-- La API se sirve con Spring Web MVC, junto a Validation, Actuator y Lombok.
-- La caché de configuración de Gradle está activada.
+- Aplicación **Spring Boot 4.1.2** en **Java 25**, con Web MVC, Validation, Actuator y Lombok.
+- Se construye con **Gradle 9.9.0** mediante el wrapper `gradlew`, con la caché de configuración activada.
 
 ## Consecuencias
 
-- Solo hace falta un JDK 25, el wrapper descarga la versión correcta de Gradle.
-- Las versiones de las libs de Spring las gestiona el plugin de Spring Boot.
+- Solo hace falta un JDK 25: el wrapper descarga Gradle.
+- Las versiones de las librerías de Spring las gestiona el plugin de Spring Boot.
 - Lombok y Mockito necesitan ajustes extra en JDK 25, que ya están en `build.gradle`.
 
 ## Dónde verlo
 
-- `build.gradle`
-- `gradle.properties`
-- `gradle/wrapper/gradle-wrapper.properties`
+`build.gradle`, `gradle.properties` y `gradle/wrapper/gradle-wrapper.properties`.

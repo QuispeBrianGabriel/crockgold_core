@@ -12,15 +12,13 @@ El servicio necesita una base de datos relacional y una forma ordenada de cambia
 - La base de datos es **PostgreSQL 18**.
 - El acceso a datos se hace con **Spring Data JDBC**.
 - Los cambios de esquema se aplican con **Flyway**.
-- La conexión se configura con envs (`SPRING_DATASOURCE_*`).
+- La conexión se configura con las variables `SPRING_DATASOURCE_*`.
 
 ## Consecuencias
 
-- Misma versión de PostgreSQL en desarrollo y en tests (`postgres:18`).
-- No hay credenciales de base de datos escritas en el código.
+- La misma versión de PostgreSQL (`postgres:18`) en desarrollo y en tests.
+- No hay credenciales de base de datos en el código.
 
 ## Dónde verlo
 
-- `build.gradle` (dependencias `data-jdbc`, `flyway` y `postgresql`)
-- `docker/compose.yml`
-- `docker/.env.example`
+`build.gradle`, `docker/compose.yml` y `docker/.env.example`.

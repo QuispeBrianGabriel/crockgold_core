@@ -9,32 +9,19 @@ Se quiere validar cada cambio y publicar versiones con el menor número de pasos
 
 ## Decisión
 
-**Trabajo diario**
-
-- Se trabaja directo sobre `main`, con mensajes en formato *Conventional Commits*.
+- Se trabaja directo sobre `main`, con mensajes en formato Conventional Commits.
 - Todo push a cualquier rama ejecuta el workflow **Pipeline**.
-- El Pipeline envía la cobertura a Codecov con el secret `CODECOV_TOKEN`; si el envío falla, solo avisa.
-
-**Publicar una versión**
-
-- Una versión se publica con un tag `v*` (ej `v0.3.0`): El tag es la única fuente de la versión.
-- El workflow **Release** hace lo siguiente en este orden:
-  1. Espera al Pipeline de ese mismo commit y se detiene si falló.
-  2. Construye la imagen con `docker/Dockerfile.prod`.
-  3. La publica en GitHub Container Registry (`ghcr.io`), etiquetada con la versión.
-  4. Crea el GitHub Release, con notas  gitgeneradas por-cliff a partir de los commits.
+- Una versión se publica con un tag `v*`, que es la única fuente de la versión.
+- El workflow **Release** espera al Pipeline de ese commit, construye la imagen con `docker/Dockerfile.prod`, la publica en `ghcr.io` y crea el GitHub Release con notas de git-cliff.
 
 ## Consecuencias
 
-- Publicar es un solo comando: `git tag v0.3.0 && git push origin main v0.3.0`.
-- El tag no vuelve a ejecutar los tests: se reutiliza el resultado del Pipeline del commit.
+- Publicar es un solo comando, `make release`. Los pasos están en [RELEASE.md](../RELEASE.md).
+- El tag no vuelve a ejecutar los tests: reutiliza el resultado del Pipeline del commit.
 - No se publica ninguna imagen si el Pipeline del commit falló.
-- Las notas del release requieren Conventional Commits, el cual **no se valida**.
-- La versión no está escrita en ningún archivo del proyecto.
+- Las notas del Release dependen de Conventional Commits, que no se valida.
 - Cada job de los workflows pide solo los permisos que necesita.
 
 ## Dónde verlo
 
-- `.github/workflows/pipeline.yml`
-- `.github/workflows/release.yml`
-- `README.md` (sección «Integración continua y releases»)
+`.github/workflows/pipeline.yml`, `.github/workflows/release.yml` y `scripts/release.sh`.
