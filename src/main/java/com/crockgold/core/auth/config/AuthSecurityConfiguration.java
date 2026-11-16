@@ -1,5 +1,7 @@
 package com.crockgold.core.auth.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -21,6 +23,7 @@ class AuthSecurityConfiguration {
       .sessionManagement(
         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .csrf(csrf -> csrf.disable())
+      .cors(withDefaults())
       .build();
   }
 
