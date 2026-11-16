@@ -35,6 +35,9 @@
         "[java]": {
           "editor.formatOnSave": false
         },
+        "[cucumber]": {
+          "editor.formatOnSave": false
+        },
         "files.exclude": {
           "**/.gradle": true,
           "**/build": true
