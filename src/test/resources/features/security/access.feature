@@ -1,0 +1,35 @@
+# language: es
+Característica: Acceso a la API
+
+  Como responsable de Crockgold
+  Quiero que la API solo atienda a los clientes que presentan su credencial
+  Para que nadie ajeno pueda usarla
+
+  Regla: Sin credencial solo se puede comprobar que la aplicación está disponible
+
+    Antecedentes:
+      Dado un cliente sin credencial
+
+    @happy
+    Escenario: Un cliente sin credencial comprueba que la aplicación está disponible
+      Cuando consulta el estado de salud
+      Entonces ve que la aplicación está disponible
+
+    @unhappy
+    Esquema del escenario: Un cliente sin credencial no accede a <recurso>
+      Cuando consulta <recurso>
+      Entonces se le deniega el acceso
+
+      Ejemplos:
+        | recurso                         |
+        | la información de la aplicación |
+        | una operación que no existe     |
+
+  Regla: La credencial se presenta en cada consulta, porque la API no abre sesiones
+
+    @happy
+    Escenario: Un cliente con la credencial accede sin que se le abra una sesión
+      Dado un cliente con la credencial de la API
+      Cuando consulta la información de la aplicación
+      Entonces se le permite el acceso
+      Pero no se le abre ninguna sesión

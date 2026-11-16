@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
-# Abre en el navegador del HOST los dos informes que deja `make test`:
+# Abre en el navegador del HOST los informes que deja `make test`:
 #   - Resultados de los tests (Gradle):  build/reports/tests/test/
 #   - Cobertura de código (JaCoCo):      build/reports/jacoco/test/html/
+#   - Escenarios de integración (Serenity): build/reports/serenity/
 #
 # Los archivos viven dentro del contenedor, así que el navegador no puede
 # abrirlos como file://. Por eso se sirve build/reports/ por HTTP en el 8090:
@@ -10,7 +11,7 @@
 #   - VS Code reenvía el puerto al host (forwardPorts en devcontainer.json).
 #   - $BROWSER: variable que define VS Code para abrir una URL en el host.
 #
-# Si solo existe uno de los dos informes, abre ese y avisa del otro.
+# Si falta algún informe, abre los que existen y avisa del resto.
 # El servidor queda en primer plano: Ctrl+C para cerrarlo.
 # -----------------------------------------------------------------------------
 source "$(dirname "$0")/_common.sh"
@@ -24,11 +25,12 @@ INTERRUPT_MSG="👋 Servidores cerrados correctamente"
 declare -A REPORTS=(
 	["Tests"]="tests/test/index.html"
 	["Cobertura"]="jacoco/test/html/index.html"
+	["Escenarios"]="serenity/index.html"
 )
 
 # Solo se abren los informes que existen.
 urls=()
-for name in Tests Cobertura; do
+for name in Tests Cobertura Escenarios; do
 	if [[ -f "$ROOT/${REPORTS[$name]}" ]]; then
 		urls+=("$name|$BASE/${REPORTS[$name]}")
 	else
