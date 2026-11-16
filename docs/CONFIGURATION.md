@@ -28,9 +28,12 @@ Todo se configura con variables de entorno. `application.yaml` no contiene nada 
 | `SPRING_DATASOURCE_PASSWORD` | `${{Postgres.POSTGRES_PASSWORD}}` | Valor de `POSTGRES_PASSWORD` |
 | `SPRING_SECURITY_USER_NAME` | `user` | `dev` en la plantilla |
 | `SPRING_SECURITY_USER_PASSWORD` | Secreta | La genera `make setup` |
+| `FRONT_URL` | No se define | `http://localhost:4200` en la plantilla |
 | `PORT` | `8080` | No se usa |
 
-- Todas son obligatorias salvo `SPRING_SECURITY_USER_NAME`, que por defecto es `user`.
+- Todas son obligatorias salvo `SPRING_SECURITY_USER_NAME`, que por defecto es `user`, y `FRONT_URL`.
+- `FRONT_URL` es la URL del front, el único origen al que la API permite llamarla desde el navegador (CORS). Sin ella no se admite ninguno.
+- En Railway el front llama a la API por la red privada, desde su nginx y no desde el navegador. Por eso allí no hace falta `FRONT_URL`.
 - Sin `SPRING_SECURITY_USER_PASSWORD` la aplicación no arranca.
 - La aplicación no lee `PORT`. Railway la usa para saber a qué puerto enviar el tráfico.
 - En Railway la conexión a PostgreSQL va por la red privada.
