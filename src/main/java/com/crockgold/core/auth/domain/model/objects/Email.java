@@ -1,7 +1,7 @@
-package com.crockgold.core.auth.model.objects;
+package com.crockgold.core.auth.domain.model.objects;
 
-import com.crockgold.core.auth.errors.InvalidEmailError.Reason;
-import com.crockgold.core.auth.errors.InvalidEmailError;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError.Reason;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError;
 import java.util.Locale;
 import java.util.regex.Pattern;
 

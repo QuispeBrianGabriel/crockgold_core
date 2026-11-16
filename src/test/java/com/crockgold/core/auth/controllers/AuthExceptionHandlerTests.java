@@ -2,8 +2,8 @@ package com.crockgold.core.auth.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.crockgold.core.auth.errors.InvalidEmailError;
-import com.crockgold.core.auth.errors.InvalidPasswordError;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError;
+import com.crockgold.core.auth.domain.errors.InvalidPasswordError;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

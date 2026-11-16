@@ -1,6 +1,6 @@
-package com.crockgold.core.auth.errors;
+package com.crockgold.core.auth.domain.errors;
 
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Email;
 
 public class EmailAlreadyRegisteredError extends DomainError {
 

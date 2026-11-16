@@ -1,4 +1,4 @@
-package com.crockgold.core.auth.errors;
+package com.crockgold.core.auth.domain.errors;
 
 public abstract class DomainError extends RuntimeException {
 

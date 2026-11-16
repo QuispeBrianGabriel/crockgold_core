@@ -9,11 +9,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.crockgold.core.auth.errors.EmailAlreadyRegisteredError;
-import com.crockgold.core.auth.errors.InvalidCredentialsError;
-import com.crockgold.core.auth.model.User;
-import com.crockgold.core.auth.model.objects.Email;
-import com.crockgold.core.auth.model.objects.Password;
+import com.crockgold.core.auth.domain.errors.EmailAlreadyRegisteredError;
+import com.crockgold.core.auth.domain.errors.InvalidCredentialsError;
+import com.crockgold.core.auth.domain.model.User;
+import com.crockgold.core.auth.domain.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Password;
 import com.crockgold.core.auth.repositories.UserRepository;
 import java.util.Optional;
 import java.util.UUID;

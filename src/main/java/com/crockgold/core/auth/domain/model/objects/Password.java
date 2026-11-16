@@ -1,7 +1,7 @@
-package com.crockgold.core.auth.model.objects;
+package com.crockgold.core.auth.domain.model.objects;
 
-import com.crockgold.core.auth.errors.InvalidPasswordError;
-import com.crockgold.core.auth.errors.InvalidPasswordError.Reason;
+import com.crockgold.core.auth.domain.errors.InvalidPasswordError;
+import com.crockgold.core.auth.domain.errors.InvalidPasswordError.Reason;
 import java.util.regex.Pattern;
 
 /**

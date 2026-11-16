@@ -1,10 +1,10 @@
-package com.crockgold.core.auth.model.objects;
+package com.crockgold.core.auth.domain.model.objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import com.crockgold.core.auth.errors.InvalidEmailError;
-import com.crockgold.core.auth.errors.InvalidEmailError.Reason;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError.Reason;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

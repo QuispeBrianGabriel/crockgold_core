@@ -1,7 +1,7 @@
 package com.crockgold.core.auth.repositories.entities;
 
-import com.crockgold.core.auth.model.User;
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.model.User;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import java.util.UUID;
 import lombok.Value;
 import lombok.With;

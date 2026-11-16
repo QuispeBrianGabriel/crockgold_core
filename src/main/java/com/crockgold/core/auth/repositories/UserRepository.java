@@ -1,9 +1,9 @@
 package com.crockgold.core.auth.repositories;
 
 import com.crockgold.core.auth.repositories.entities.UserEntity;
-import com.crockgold.core.auth.errors.EmailAlreadyRegisteredError;
-import com.crockgold.core.auth.model.User;
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.errors.EmailAlreadyRegisteredError;
+import com.crockgold.core.auth.domain.model.User;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import com.crockgold.core.auth.repositories.db.UserJdbcRepository;
 
 import java.util.Optional;

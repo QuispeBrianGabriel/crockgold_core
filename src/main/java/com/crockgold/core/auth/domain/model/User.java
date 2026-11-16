@@ -1,6 +1,6 @@
-package com.crockgold.core.auth.model;
+package com.crockgold.core.auth.domain.model;
 
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import java.util.UUID;
 import lombok.Value;
 

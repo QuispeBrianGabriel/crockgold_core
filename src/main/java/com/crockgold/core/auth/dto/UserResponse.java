@@ -1,6 +1,6 @@
 package com.crockgold.core.auth.dto;
 
-import com.crockgold.core.auth.model.User;
+import com.crockgold.core.auth.domain.model.User;
 import java.util.UUID;
 
 public record UserResponse(UUID id, String email) {

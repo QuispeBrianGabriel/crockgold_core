@@ -1,7 +1,7 @@
 package com.crockgold.core.auth.repositories.db;
 
 import com.crockgold.core.auth.repositories.entities.UserEntity;
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;

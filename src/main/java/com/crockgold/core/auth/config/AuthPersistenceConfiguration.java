@@ -1,6 +1,6 @@
 package com.crockgold.core.auth.config;
 
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

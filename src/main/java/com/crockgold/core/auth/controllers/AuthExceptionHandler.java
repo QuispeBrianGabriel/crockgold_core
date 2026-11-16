@@ -1,11 +1,11 @@
 package com.crockgold.core.auth.controllers;
 
-import com.crockgold.core.auth.errors.EmailAlreadyRegisteredError;
-import com.crockgold.core.auth.errors.InvalidCredentialsError;
-import com.crockgold.core.auth.errors.InvalidEmailError;
-import com.crockgold.core.auth.errors.InvalidPasswordError;
-import com.crockgold.core.auth.model.objects.Email;
-import com.crockgold.core.auth.model.objects.Password;
+import com.crockgold.core.auth.domain.errors.EmailAlreadyRegisteredError;
+import com.crockgold.core.auth.domain.errors.InvalidCredentialsError;
+import com.crockgold.core.auth.domain.errors.InvalidEmailError;
+import com.crockgold.core.auth.domain.errors.InvalidPasswordError;
+import com.crockgold.core.auth.domain.model.objects.Email;
+import com.crockgold.core.auth.domain.model.objects.Password;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;

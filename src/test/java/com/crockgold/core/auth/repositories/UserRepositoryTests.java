@@ -6,9 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.crockgold.core.auth.errors.EmailAlreadyRegisteredError;
-import com.crockgold.core.auth.model.User;
-import com.crockgold.core.auth.model.objects.Email;
+import com.crockgold.core.auth.domain.errors.EmailAlreadyRegisteredError;
+import com.crockgold.core.auth.domain.model.User;
+import com.crockgold.core.auth.domain.model.objects.Email;
 import com.crockgold.core.auth.repositories.db.UserJdbcRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
