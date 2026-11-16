@@ -1,3 +1,9 @@
 spring:
   application:
     name: crockgold-core
+  mvc:
+    problemdetails:
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
