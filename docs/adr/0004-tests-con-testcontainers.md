@@ -21,4 +21,4 @@ Los tests arrancan la aplicación completa, y esta necesita una base de datos.
 
 ## Dónde verlo
 
-`src/test/java/com/crockgold/core/TestcontainersConfiguration.java` y `docker/compose.yml`.
+`src/test/java/com/crockgold/core/integration/support/TestcontainersConfiguration.java` y `docker/compose.yml`.
