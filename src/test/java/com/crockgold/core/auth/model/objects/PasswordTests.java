@@ -44,20 +44,8 @@ class PasswordTests {
   }
 
   @Test
-  @DisplayName("El mínimo cuenta caracteres, no unidades UTF-16")
-  void minimumLengthCountsCharactersNotUtf16Units() {
-    String eightEmojis = "🔑".repeat(8);
-    String sevenEmojis = "🔑".repeat(7);
-    assertThat(new Password(eightEmojis).value()).isEqualTo(eightEmojis);
-    assertThatExceptionOfType(InvalidPasswordError.class)
-      .isThrownBy(() -> new Password(sevenEmojis))
-      .extracting(err -> err.reason())
-      .isEqualTo(Reason.TOO_SHORT);
-  }
-
-  @Test
-  @DisplayName("Admite 72 bytes y rechaza 73, el límite de BCrypt")
-  void allowsUpTo72Bytes() {
+  @DisplayName("Admite 72 caracteres y rechaza 73, el límite de BCrypt")
+  void allowsUpTo72Characters() {
     String longest = "a".repeat(72);
     String tooLong = "a".repeat(73);
     assertThat(new Password(longest).value()).isEqualTo(longest);
@@ -68,15 +56,20 @@ class PasswordTests {
   }
 
   @Test
-  @DisplayName("El máximo cuenta bytes UTF-8, no caracteres")
-  void maximumLengthCountsUtf8BytesNotCharacters() {
-    String seventyTwoBytes = "ñ".repeat(36);
-    String seventyFourBytes = "ñ".repeat(37);
-    assertThat(new Password(seventyTwoBytes).value()).isEqualTo(seventyTwoBytes);
+  @DisplayName("Admite todos los símbolos del teclado")
+  void allowsEveryKeyboardSymbol() {
+    String symbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+    assertThat(new Password(symbols).value()).isEqualTo(symbols);
+  }
+
+  @ParameterizedTest
+  @DisplayName("Rechaza letras acentuadas, eñes, emojis y caracteres de control")
+  @ValueSource(strings = {"contraseña", "pásswörd", "🔑🔑🔑🔑🔑🔑🔑🔑", "pass\tword", "pass\nword"})
+  void rejectsCharactersOutsidePrintableAscii(String value) {
     assertThatExceptionOfType(InvalidPasswordError.class)
-      .isThrownBy(() -> new Password(seventyFourBytes))
+      .isThrownBy(() -> new Password(value))
       .extracting(err -> err.reason())
-      .isEqualTo(Reason.TOO_LONG);
+      .isEqualTo(Reason.INVALID_CHARACTERS);
   }
 
   @Test

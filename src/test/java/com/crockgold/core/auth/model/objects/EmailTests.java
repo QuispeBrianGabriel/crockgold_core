@@ -29,17 +29,10 @@ class EmailTests {
   }
 
   @Test
-  @DisplayName("La parte local admite letras, dígitos y puntos intermedios")
-  void localPartAllowsLettersDigitsAndInnerDots() {
-    String email = new Email("john.doe.123@example.com").value();
-    assertThat(email).isEqualTo("john.doe.123@example.com");
-  }
-
-  @Test
-  @DisplayName("La parte local admite los símbolos de RFC 5322")
-  void localPartAllowsRfc5322Symbols() {
-    String email = new Email("!#$%&'*+/=?^_`{|}~-@example.com").value();
-    assertThat(email).isEqualTo("!#$%&'*+/=?^_`{|}~-@example.com");
+  @DisplayName("La parte local admite letras, dígitos, puntos intermedios y los signos _ + - '")
+  void localPartAllowsLettersDigitsInnerDotsAndSigns() {
+    String email = new Email("john.o'doe_99-work+tag@example.com").value();
+    assertThat(email).isEqualTo("john.o'doe_99-work+tag@example.com");
   }
 
   @Test
@@ -90,6 +83,25 @@ class EmailTests {
   @DisplayName("Rechaza un punto al inicio, al final o repetido en la parte local")
   @ValueSource(strings = {".john@example.com", "john.@example.com", "john..doe@example.com"})
   void rejectsMisplacedDotInLocalPart(String value) {
+    assertThatExceptionOfType(InvalidEmailError.class)
+      .isThrownBy(() -> new Email(value))
+      .extracting(err -> err.reason())
+      .isEqualTo(Reason.INVALID_LOCAL_PART);
+  }
+
+  @ParameterizedTest
+  @DisplayName("La parte local admite los signos _ + - ' al inicio, al final o seguidos")
+  @ValueSource(strings = {
+      "_john@example.com", "john-@example.com", "john+@example.com", "john__doe@example.com",
+      "john.-doe@example.com", "'john@example.com"})
+  void localPartAllowsSignsAnywhere(String value) {
+    assertThat(new Email(value).value()).isEqualTo(value);
+  }
+
+  @ParameterizedTest
+  @DisplayName("Rechaza en la parte local los símbolos de RFC 5322")
+  @ValueSource(strings = {"jo!#$%&doe@exa.com", "jo*/=?^doe@exa.com", "jo`{|}~doe@exa.com"})
+  void rejectsUncommonSymbolsInLocalPart(String value) {
     assertThatExceptionOfType(InvalidEmailError.class)
       .isThrownBy(() -> new Email(value))
       .extracting(err -> err.reason())

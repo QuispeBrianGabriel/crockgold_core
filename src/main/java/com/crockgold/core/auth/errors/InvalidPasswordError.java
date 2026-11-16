@@ -4,6 +4,7 @@ public class InvalidPasswordError extends DomainError {
 
   public enum Reason {
     BLANK,
+    INVALID_CHARACTERS,
     TOO_SHORT,
     TOO_LONG
   }

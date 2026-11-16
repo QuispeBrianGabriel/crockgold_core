@@ -1,144 +1,265 @@
-# Notación: ␣ es un espacio, [8×a] repite "a" 8 veces, [vacío] es un texto vacío y [nulo] un dato ausente.
 # language: es
 Característica: Registro de usuarios
-  Como persona que quiere usar Crockgold
-  Quiero registrarme con mi email y una contraseña
-  Para tener una cuenta que solo yo pueda usar
+  Como persona con correo
+  Quiero registrarme
+  Para tener una cuenta
 
-  Regla: Un email y una contraseña válidos registran a un usuario, identificado por su email en minúsculas y sin espacios alrededor
+  Regla: Todos se registran con email y contraseña
 
     @happy
-    Esquema del escenario: Se registra quien usa <caso>
-      Cuando <email> se registra con la contraseña correct-horse-battery
-      Entonces queda registrado como el usuario <usuario>
+    Escenario: Se registra con un email y una contraseña válidos
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                    | contraseña            |
+        | john@example.com         | correct-horse-battery |
+        | John.Doe+tag@Example.COM | correct-horse-battery |
+        | ␣␣jane@example.com␣      | correct-horse-battery |
+      Entonces queda registrado como cada uno de estos usuarios:
+        | email                    |
+        | john@example.com         |
+        | john.doe+tag@example.com |
+        | jane@example.com         |
 
-      Ejemplos:
-        | caso                              | email                    | usuario                  |
-        | un email y una contraseña válidos | john@example.com         | john@example.com         |
-        | un email con mayúsculas           | John.Doe+tag@Example.COM | john.doe+tag@example.com |
-        | un email con espacios alrededor   | ␣␣john@example.com␣      | john@example.com         |
+  Regla: El email es obligatorio
+
+    @unhappy
+    Escenario: No se registra sin email o sin contraseña
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña            |
+        | [nulo]           | correct-horse-battery |
+        | [vacío]          | correct-horse-battery |
+        | [3×␣]            | correct-horse-battery |
+      Entonces se rechaza porque faltan datos
+
+  Regla: La contraseña es obligatoria
+
+    @unhappy
+    Escenario: No se registra sin contraseña
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña |
+        | john@example.com | [nulo]     |
+        | john@example.com | [vacío]    |
+        | john@example.com | [8×␣]      |
+      Entonces se rechaza porque faltan datos
 
   Regla: Un email pertenece a un solo usuario
 
     @unhappy
-    Esquema del escenario: No se registra quien usa <caso>
+    Escenario: No se registra con un email ya registrado
       Dado que los siguientes usuarios están registrados:
         | email            | contraseña            |
         | john@example.com | correct-horse-battery |
-      Cuando <email> se registra con la contraseña another-password
+      Cuando alguien se registra con cada uno de estos datos:
+        | email              | contraseña       |
+        | john@example.com   | another-password |
+        | JOHN@example.com   | another-password |
+        | ␣john@example.com␣ | another-password |
       Entonces se rechaza porque el email ya está registrado
-
-      Ejemplos:
-        | caso                                           | email              |
-        | un email ya registrado                         | john@example.com   |
-        | un email ya registrado, en otras mayúsculas    | JOHN@example.com   |
-        | un email ya registrado, con espacios alrededor | ␣john@example.com␣ |
 
     @unhappy @border
     Escenario: Dos personas que se registran a la vez con el mismo email no lo comparten
       Cuando dos personas se registran a la vez con el email john@example.com
       Entonces solo una de ellas queda registrada
 
-  Regla: El email debe ser una dirección de correo válida
+  Regla: El email tiene como máximo 254 caracteres
 
-    Esquema del escenario: Se registra un email <caso>
-      Cuando <email> se registra con la contraseña correct-horse-battery
-      Entonces queda registrado como el usuario <email>
-
-      @happy
-      Ejemplos: Formas admitidas
-        | caso                                    | email                            |
-        | con puntos y dígitos antes de la arroba | john.doe.123@example.com         |
-        | con símbolos antes de la arroba         | !#$%&'*+/=?^_`{\|}~-@example.com |
-        | con subdominios                         | john@mail.sub.example.com        |
-        | con dígitos y guiones en el dominio     | john@my-company-123.com          |
-
-      @happy @border
-      Ejemplos: Límites admitidos
-        | caso                                       | email                             |
-        | de 254 caracteres                          | a@[63×b].[63×b].[63×b].[56×c].com |
-        | con 64 caracteres antes de la arroba       | [64×a]@example.com                |
-        | con 63 caracteres en una parte del dominio | john@[63×a].com                   |
-        | con una terminación de 2 letras            | john@example.co                   |
-
-    Esquema del escenario: No se registra un email <caso>
-      Cuando <email> se registra con la contraseña correct-horse-battery
-      Entonces se rechaza porque <motivo>
-
-      @unhappy
-      Ejemplos: Formas rechazadas
-        | caso                                       | email                 | motivo                                     |
-        | sin arroba                                 | plain                 | el email no tiene exactamente una arroba   |
-        | con dos arrobas                            | a@b@example.com       | el email no tiene exactamente una arroba   |
-        | sin nada antes de la arroba                | @example.com          | la parte anterior a la arroba no es válida |
-        | que empieza por un punto                   | .john@example.com     | la parte anterior a la arroba no es válida |
-        | con un punto justo antes de la arroba      | john.@example.com     | la parte anterior a la arroba no es válida |
-        | con dos puntos seguidos antes de la arroba | john..doe@example.com | la parte anterior a la arroba no es válida |
-        | con un espacio antes de la arroba          | jo␣hn@example.com     | la parte anterior a la arroba no es válida |
-        | con letras acentuadas antes de la arroba   | jöhn@example.com      | la parte anterior a la arroba no es válida |
-        | sin dominio                                | john@                 | el dominio del email no es válido          |
-        | sin terminación en el dominio              | john@localhost        | el dominio del email no es válido          |
-        | con dos puntos seguidos en el dominio      | john@example..com     | el dominio del email no es válido          |
-        | con un dominio que empieza por guion       | john@-example.com     | el dominio del email no es válido          |
-        | con una parte del dominio acabada en guion | john@example-.com     | el dominio del email no es válido          |
-        | con un espacio en el dominio               | john@exa␣mple.com     | el dominio del email no es válido          |
-        | con dígitos en la terminación              | john@example.c0m      | el dominio del email no es válido          |
-
-      @unhappy @border
-      Ejemplos: Límites rechazados
-        | caso                                       | email                             | motivo                                           |
-        | de 255 caracteres                          | a@[63×b].[63×b].[63×b].[57×c].com | el email es demasiado largo                      |
-        | con 65 caracteres antes de la arroba       | [65×a]@example.com                | la parte anterior a la arroba es demasiado larga |
-        | con 64 caracteres en una parte del dominio | john@[64×a].com                   | el dominio del email no es válido                |
-        | con una terminación de 1 letra             | john@example.c                    | el dominio del email no es válido                |
-
-  Regla: La contraseña debe tener al menos 8 caracteres y ocupar como máximo 72 bytes
-
-    Esquema del escenario: Se registra una contraseña <caso>
-      Cuando john@example.com se registra con la contraseña <contraseña>
-      Entonces queda registrado como el usuario john@example.com
-
-      @happy
-      Ejemplos: Formas admitidas
-        | caso                   | contraseña      |
-        | de letras y dígitos    | MySecurePass123 |
-        | con espacios           | ␣Pass␣word␣1␣   |
-        | con espacios alrededor | ␣␣␣spaced␣␣␣    |
-
-      @happy @border
-      Ejemplos: Límites admitidos
-        | caso                   | contraseña |
-        | de 8 caracteres        |   12345678 |
-        | de 8 emojis            | [8×🔑]      |
-        | de 72 letras, 72 bytes | [72×a]     |
-        | de 36 eñes, 72 bytes   | [36×ñ]     |
-        | de 18 emojis, 72 bytes | [18×🔑]     |
+    @happy @border
+    Escenario: Se registra con un email de 254 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                             | contraseña            |
+        | a@[63×b].[63×b].[63×b].[56×c].com | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
 
     @unhappy @border
-    Esquema del escenario: No se registra una contraseña <caso>
-      Cuando john@example.com se registra con la contraseña <contraseña>
-      Entonces se rechaza porque la contraseña es demasiado <defecto>
+    Escenario: No se registra con un email de 255 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                             | contraseña            |
+        | a@[63×b].[63×b].[63×b].[57×c].com | correct-horse-battery |
+      Entonces se rechaza porque el email es demasiado largo
 
-      Ejemplos:
-        | caso                   | contraseña | defecto |
-        | de 7 caracteres        |    1234567 | corta   |
-        | de 7 emojis            | [7×🔑]      | corta   |
-        | de 73 letras, 73 bytes | [73×a]     | larga   |
-        | de 37 eñes, 74 bytes   | [37×ñ]     | larga   |
-        | de 19 emojis, 76 bytes | [19×🔑]     | larga   |
-
-  Regla: El email y la contraseña son obligatorios
+  Regla: El email tiene exactamente una arroba, que separa el nombre del dominio
 
     @unhappy
-    Esquema del escenario: Nadie se registra con <caso>
-      Cuando <email> se registra con la contraseña <contraseña>
-      Entonces se rechaza porque faltan datos
+    Escenario: No se registra con un email sin arroba o con más de una
+      Cuando alguien se registra con cada uno de estos datos:
+        | email           | contraseña            |
+        | plain           | correct-horse-battery |
+        | a@b@example.com | correct-horse-battery |
+      Entonces se rechaza porque el email no tiene exactamente una arroba
 
-      Ejemplos:
-        | caso                            | email            | contraseña            |
-        | el email ausente                | [nulo]           | correct-horse-battery |
-        | el email vacío                  | [vacío]          | correct-horse-battery |
-        | un email solo de espacios       | [3×␣]            | correct-horse-battery |
-        | la contraseña ausente           | john@example.com | [nulo]                |
-        | la contraseña vacía             | john@example.com | [vacío]               |
-        | una contraseña solo de espacios | john@example.com | [8×␣]                 |
+  Regla: El nombre del email tiene entre 1 y 64 caracteres
+
+    @happy @border
+    Escenario: Se registra con un nombre del email de 64 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email              | contraseña            |
+        | [64×a]@example.com | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy @border
+    Escenario: No se registra con un nombre del email de 65 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email              | contraseña            |
+        | [65×a]@example.com | correct-horse-battery |
+      Entonces se rechaza porque la parte anterior a la arroba es demasiado larga
+
+    @unhappy @border
+    Escenario: No se registra sin nombre del email
+      Cuando alguien se registra con cada uno de estos datos:
+        | email        | contraseña            |
+        | @example.com | correct-horse-battery |
+      Entonces se rechaza porque la parte anterior a la arroba no es válida
+
+  Regla: El nombre del email puede tener letras sin acentos, dígitos y los signos _ + - ', con puntos sueltos solo entre ellos
+
+    @happy
+    Escenario: Se registra con un nombre del email de letras, dígitos, signos y puntos intermedios
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                    | contraseña            |
+        | john.doe.123@example.com | correct-horse-battery |
+        | john_doe@example.com     | correct-horse-battery |
+        | john-doe@example.com     | correct-horse-battery |
+        | john+tag@example.com     | correct-horse-battery |
+        | john.o'doe@example.com   | correct-horse-battery |
+        | _john@example.com        | correct-horse-battery |
+        | john-@example.com        | correct-horse-battery |
+        | john__doe@example.com    | correct-horse-battery |
+        | john.-doe@example.com    | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy
+    Escenario: No se registra con un nombre del email con puntos mal colocados
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                 | contraseña            |
+        | .john@example.com     | correct-horse-battery |
+        | john.@example.com     | correct-horse-battery |
+        | john..doe@example.com | correct-horse-battery |
+      Entonces se rechaza porque la parte anterior a la arroba no es válida
+
+    @unhappy
+    Escenario: No se registra con un nombre del email con caracteres no admitidos
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                 | contraseña            |
+        | jo␣hn@example.com     | correct-horse-battery |
+        | jöhn@example.com      | correct-horse-battery |
+        | john!doe@example.com  | correct-horse-battery |
+        | john#doe@example.com  | correct-horse-battery |
+        | john$doe@example.com  | correct-horse-battery |
+        | john%doe@example.com  | correct-horse-battery |
+        | john&doe@example.com  | correct-horse-battery |
+        | john*doe@example.com  | correct-horse-battery |
+        | john/doe@example.com  | correct-horse-battery |
+        | john=doe@example.com  | correct-horse-battery |
+        | john?doe@example.com  | correct-horse-battery |
+        | john^doe@example.com  | correct-horse-battery |
+        | john`doe@example.com  | correct-horse-battery |
+        | john{doe@example.com  | correct-horse-battery |
+        | john\|doe@example.com | correct-horse-battery |
+        | john}doe@example.com  | correct-horse-battery |
+        | john~doe@example.com  | correct-horse-battery |
+      Entonces se rechaza porque la parte anterior a la arroba no es válida
+
+  Regla: El dominio se compone de partes separadas por puntos, cada una de letras sin acentos, dígitos y guiones intermedios
+
+    @happy
+    Escenario: Se registra con un dominio de varias partes, con dígitos y guiones intermedios
+      Cuando alguien se registra con cada uno de estos datos:
+        | email                     | contraseña            |
+        | john@mail.sub.example.com | correct-horse-battery |
+        | john@my-company-123.com   | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy
+    Escenario: No se registra con un dominio con partes vacías, guiones en los extremos o caracteres no admitidos
+      Cuando alguien se registra con cada uno de estos datos:
+        | email             | contraseña            |
+        | john@             | correct-horse-battery |
+        | john@example..com | correct-horse-battery |
+        | john@-example.com | correct-horse-battery |
+        | john@example-.com | correct-horse-battery |
+        | john@exa␣mple.com | correct-horse-battery |
+      Entonces se rechaza porque el dominio del email no es válido
+
+  Regla: Cada parte del dominio tiene como máximo 63 caracteres
+
+    @happy @border
+    Escenario: Se registra con una parte del dominio de 63 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email           | contraseña            |
+        | john@[63×a].com | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy @border
+    Escenario: No se registra con una parte del dominio de 64 caracteres
+      Cuando alguien se registra con cada uno de estos datos:
+        | email           | contraseña            |
+        | john@[64×a].com | correct-horse-battery |
+      Entonces se rechaza porque el dominio del email no es válido
+
+  Regla: El dominio acaba en una terminación de al menos 2 letras
+
+    @happy @border
+    Escenario: Se registra con una terminación de 2 letras
+      Cuando alguien se registra con cada uno de estos datos:
+        | email           | contraseña            |
+        | john@example.co | correct-horse-battery |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy
+    Escenario: No se registra con un dominio sin terminación o con una que no es solo de letras
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña            |
+        | john@localhost   | correct-horse-battery |
+        | john@example.c0m | correct-horse-battery |
+      Entonces se rechaza porque el dominio del email no es válido
+
+    @unhappy @border
+    Escenario: No se registra con una terminación de 1 letra
+      Cuando alguien se registra con cada uno de estos datos:
+        | email          | contraseña            |
+        | john@example.c | correct-horse-battery |
+      Entonces se rechaza porque el dominio del email no es válido
+
+  Regla: La contraseña tiene entre 8 y 72 caracteres
+
+    @happy @border
+    Escenario: Se registra con una contraseña en el límite de lo admitido
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña |
+        | john@example.com | 12345678   |
+        | jane@example.com | [72×a]     |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy @border
+    Escenario: No se registra con una contraseña demasiado corta
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña |
+        | john@example.com | 1234567    |
+      Entonces se rechaza porque la contraseña es demasiado corta
+
+    @unhappy @border
+    Escenario: No se registra con una contraseña demasiado larga
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña |
+        | john@example.com | [73×a]     |
+      Entonces se rechaza porque la contraseña es demasiado larga
+
+  Regla: La contraseña puede tener letras sin acentos, dígitos, símbolos del teclado y espacios
+
+    @happy
+    Escenario: Se registra con una contraseña de forma admitida
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña                          |
+        | john@example.com | MySecurePass123                     |
+        | jane@example.com | ␣Pass␣word␣1␣                       |
+        | lucy@example.com | ␣␣␣spaced␣␣␣                        |
+        | kate@example.com | !"#$%&'()*+,-./:;<=>?@[\\]^_`{\|}~ |
+      Entonces queda registrado con cada uno de esos emails
+
+    @unhappy
+    Escenario: No se registra con una contraseña con caracteres no admitidos
+      Cuando alguien se registra con cada uno de estos datos:
+        | email            | contraseña     |
+        | john@example.com | contrásena-123 |
+        | john@example.com | contraseña-123 |
+        | john@example.com | [8×🔑]         |
+      Entonces se rechaza porque la contraseña tiene caracteres no admitidos

@@ -43,7 +43,9 @@ class AuthExceptionHandler {
     String detail = switch (exception.reason()) {
       case BLANK -> "Password must not be blank";
       case TOO_SHORT -> "Password must have at least " + Password.MIN_LENGTH + " characters";
-      case TOO_LONG -> "Password must not exceed " + Password.MAX_BYTES + " bytes";
+      case INVALID_CHARACTERS ->
+        "Password must contain only unaccented letters, digits, symbols and spaces";
+      case TOO_LONG -> "Password must not exceed " + Password.MAX_LENGTH + " characters";
     };
     return problem(HttpStatus.BAD_REQUEST, detail);
   }

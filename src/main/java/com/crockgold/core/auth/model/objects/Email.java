@@ -6,15 +6,18 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * Dirección de correo según RFC 5321 (límites) y RFC 5322 (dot-atom), restringida a ASCII. Se
- * normaliza (sin espacios laterales y en minúsculas) para que la identidad sea estable.
+ * Dirección de correo con los límites de longitud de RFC 5321 y los caracteres que admiten los
+ * proveedores habituales (Gmail, Google Workspace, Outlook, Yahoo): en la parte local, letras
+ * ASCII, dígitos y los signos {@code _ + - '}, con puntos sueltos solo entre ellos. Quedan fuera
+ * los demás símbolos de RFC 5322, que ningún proveedor habitual concede. Se normaliza (sin espacios
+ * laterales y en minúsculas) para que la identidad sea estable.
  */
 public record Email(String value) {
 
   public static final int MAX_LENGTH = 254;
   public static final int MAX_LOCAL_LENGTH = 64;
 
-  private static final String ATOM = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+";
+  private static final String ATOM = "[a-z0-9_+'-]+";
   private static final String LABEL = "[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?";
   private static final String TLD = "[a-z]{2,63}";
 

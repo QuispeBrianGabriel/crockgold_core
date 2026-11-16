@@ -16,14 +16,14 @@ Característica: Acceso a la API
       Entonces ve que la aplicación está disponible
 
     @unhappy
-    Esquema del escenario: Un cliente sin credencial no accede a <recurso>
-      Cuando consulta <recurso>
+    Escenario: Un cliente sin credencial no accede a la información de la aplicación
+      Cuando consulta la información de la aplicación
       Entonces se le deniega el acceso
 
-      Ejemplos:
-        | recurso                         |
-        | la información de la aplicación |
-        | una operación que no existe     |
+    @unhappy
+    Escenario: Un cliente sin credencial no accede a una operación que no existe
+      Cuando consulta una operación que no existe
+      Entonces se le deniega el acceso
 
   Regla: La credencial se presenta en cada consulta, porque la API no abre sesiones
 

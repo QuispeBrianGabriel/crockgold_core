@@ -102,9 +102,9 @@ class AuthServiceTests {
     }
 
     @Test
-    @DisplayName("Iniciar sesión con más bytes de los que BCrypt compara falla")
+    @DisplayName("Iniciar sesión con más caracteres de los que BCrypt compara falla")
     void loginRejectsPasswordLongerThanBcryptCompares() {
-      String tooLong = "a".repeat(Password.MAX_BYTES + 1);
+      String tooLong = "a".repeat(Password.MAX_LENGTH + 1);
       when(userRepo.findByEmail(EMAIL)).thenReturn(Optional.of(STORED));
       when(encoder.matches(tooLong, "hash")).thenReturn(true);
 

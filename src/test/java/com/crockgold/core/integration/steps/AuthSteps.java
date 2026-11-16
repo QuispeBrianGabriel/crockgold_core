@@ -24,28 +24,27 @@ import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Traduce el lenguaje del registro y del inicio de sesión a la API HTTP. Los datos de los
- * escenarios llegan en la notación de {@link Notation}.
+ * Traduce el lenguaje del registro y del inicio de sesión a la API HTTP. Cada escenario pasa en una
+ * tabla los datos que comparten un mismo resultado, escritos en la notación de {@link Notation}.
  */
 @RequiredArgsConstructor
 public class AuthSteps {
 
   private final MockMvcTester mvc;
   private final JsonMapper json;
-  private MvcTestResult response;
+  private List<String> attemptedEmails;
+  private List<MvcTestResult> responses;
   private List<MvcTestResult> simultaneousResponses;
 
   @Given("que los siguientes usuarios están registrados:")
   public void registered(List<Map<String, String>> users) {
-    for (Map<String, String> user : users) {
-      register(user.get("email"), user.get("contraseña"));
-      registeredAs(user.get("email"));
-    }
+    register(users);
+    registeredWithThoseEmails();
   }
 
-  @When("{} se registra con la contraseña {}")
-  public void register(String email, String password) {
-    response = post("/auth/register", email, password);
+  @When("alguien se registra con cada uno de estos datos:")
+  public void register(List<Map<String, String>> attempts) {
+    attempt("/auth/register", attempts);
   }
 
   @When("dos personas se registran a la vez con el email {}")
@@ -55,19 +54,24 @@ public class AuthSteps {
     simultaneousResponses = List.of(first.join(), second.join());
   }
 
-  @When("{} inicia sesión con la contraseña {}")
-  public void login(String email, String password) {
-    response = post("/auth/login", email, password);
+  @When("alguien inicia sesión con cada uno de estos datos:")
+  public void login(List<Map<String, String>> attempts) {
+    attempt("/auth/login", attempts);
   }
 
-  @Then("queda registrado como el usuario {}")
-  public void registeredAs(String email) {
-    identifiedAs(CREATED, email);
+  @Then("queda registrado con cada uno de esos emails")
+  public void registeredWithThoseEmails() {
+    identifiedAs(CREATED, attemptedEmails);
   }
 
-  @Then("se le reconoce como el usuario {}")
-  public void recognizedAs(String email) {
-    identifiedAs(OK, email);
+  @Then("queda registrado como cada uno de estos usuarios:")
+  public void registeredAs(List<Map<String, String>> users) {
+    identifiedAs(CREATED, emailsOf(users));
+  }
+
+  @Then("se le reconoce como cada uno de estos usuarios:")
+  public void recognizedAs(List<Map<String, String>> users) {
+    identifiedAs(OK, emailsOf(users));
   }
 
   @Then("solo una de ellas queda registrada")
@@ -121,9 +125,26 @@ public class AuthSteps {
     rejected(BAD_REQUEST, "Password must not exceed");
   }
 
+  @Then("se rechaza porque la contraseña tiene caracteres no admitidos")
+  public void rejectedAsPasswordWithInvalidCharacters() {
+    rejected(BAD_REQUEST, "Password must contain only");
+  }
+
   @Then("se rechaza porque las credenciales son incorrectas")
   public void rejectedAsInvalidCredentials() {
     rejected(UNAUTHORIZED, "Invalid email or password");
+  }
+
+  /** Hace un intento por cada fila de la tabla, en orden, y guarda sus respuestas. */
+  private void attempt(String path, List<Map<String, String>> attempts) {
+    attemptedEmails = emailsOf(attempts);
+    responses = attempts.stream()
+      .map(data -> post(path, data.get("email"), data.get("contraseña")))
+      .toList();
+  }
+
+  private List<String> emailsOf(List<Map<String, String>> rows) {
+    return rows.stream().map(row -> row.get("email")).toList();
   }
 
   private MvcTestResult post(String path, String email, String password) {
@@ -137,22 +158,32 @@ public class AuthSteps {
       .exchange();
   }
 
-  /** El usuario se identifica por su email y la respuesta nunca expone su contraseña. */
-  private void identifiedAs(HttpStatus status, String email) {
-    assertThat(response).hasStatus(status)
-      .bodyJson()
-      .extractingPath("$")
-      .asMap()
-      .containsOnlyKeys("id", "email")
-      .containsEntry("email", Notation.expand(email));
+  /**
+   * Cada intento identifica a su usuario por el email esperado, en el mismo orden, y la respuesta
+   * nunca expone su contraseña.
+   */
+  private void identifiedAs(HttpStatus status, List<String> emails) {
+    assertThat(responses).hasSameSizeAs(emails);
+    for (int i = 0; i < emails.size(); i++)
+      assertThat(responses.get(i)).as(attemptedEmails.get(i))
+        .hasStatus(status)
+        .bodyJson()
+        .extractingPath("$")
+        .asMap()
+        .containsOnlyKeys("id", "email")
+        .containsEntry("email", Notation.expand(emails.get(i)));
   }
 
+  /** Todos los intentos se rechazan por el mismo motivo. */
   private void rejected(HttpStatus status, String detail) {
-    assertThat(response).hasStatus(status)
-      .hasContentTypeCompatibleWith(APPLICATION_PROBLEM_JSON)
-      .bodyJson()
-      .extractingPath("$.detail")
-      .asString()
-      .startsWith(detail);
+    assertThat(responses).isNotEmpty();
+    for (int i = 0; i < responses.size(); i++)
+      assertThat(responses.get(i)).as(attemptedEmails.get(i))
+        .hasStatus(status)
+        .hasContentTypeCompatibleWith(APPLICATION_PROBLEM_JSON)
+        .bodyJson()
+        .extractingPath("$.detail")
+        .asString()
+        .startsWith(detail);
   }
 }
