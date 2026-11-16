@@ -17,6 +17,8 @@
 Construir una economía virtual confiable es un desafío técnico complejo. Los desarrolladores suelen tropezar con problemas críticos de concurrencia —como transacciones duplicadas, errores de duplicación de ítems o saldos negativos causados por acciones simultáneas de los usuarios—, lo que los obliga a reinventar infraestructura financiera y contable desde cero para cada nuevo proyecto.
 
 ## Qué hace Crockgold
+> Estado actual: la API solo ofrece registro e inicio de sesión de usuarios. Lo que sigue es el objetivo del proyecto.
+
 Crockgold actúa como una autoridad económica independiente y altamente segura (un motor contable centralizado) que gestiona el flujo de valor y activos entre entornos virtuales:
 
 - **Transacciones Atómicas:** Garantiza que cada intercambio, compra o transferencia de activos sea estrictamente consistente, previniendo condiciones de carrera (*race conditions*) y corrupción de datos bajo alta concurrencia.

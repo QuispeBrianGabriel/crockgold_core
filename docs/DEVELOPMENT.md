@@ -9,7 +9,7 @@ En el host, con `bash`, `make` y Docker:
 1. `make setup` crea `docker/.env`, detecta `DOCKER_GID` y genera las contraseñas.
 2. Abrir la carpeta en VS Code y elegir **Reopen in Container**.
 
-`make setup` es la única tarea que corre en el host. Repetirla no pisa lo ya configurado.
+`make setup` es la única tarea que corre en el host. Repetirla no pisa lo ya configurado, salvo `DOCKER_GID`, que se recalcula.
 
 ## Tareas diarias
 
@@ -19,13 +19,15 @@ Dentro del Dev Container:
 | ----- | ------- | ---- |
 | Arrancar la API | `make run` | <http://localhost:8080> |
 | Detener la API | `make stop` | |
-| Probar la API | `make smoke` | health, `401` y `404` |
+| Probar la API | `make smoke` | [qué comprueba](RELEASE.md#pasos) |
 | Validar todo | `make check` | lo mismo que el Pipeline |
 | Tests | `make test T='*Patron*'` | `T` es opcional |
 | Corregir el formato | `make format` | |
-| Ver informes | `make report` | tests y cobertura, puerto `8090` |
+| Ver informes | `make report` | tests, cobertura y escenarios, puerto `8090` |
 
 - Los tests levantan su propio `postgres:18` con Testcontainers, usando el Docker del host.
+- Los tests de integración son escenarios en `src/test/resources/features/`: [ADR 0013](adr/0013-integracion-con-cucumber-y-serenity.md).
+- `make check` y `make test` listan cada test ejecutado con su resultado (plugin `test-logger`).
 - `make check` imprime al final el resumen de cobertura.
 
 ## Base de datos local
@@ -45,7 +47,7 @@ Dentro del Dev Container:
 ## Migraciones
 
 - Se crean con `make migration NAME=<descripcion>`, que asigna el número siguiente.
-- Viven en `src/main/resources/db/migration/` como `V<n>__<descripcion>.sql`. Hoy no existe ninguna.
+- Viven en `src/main/resources/db/migration/` como `V<n>__<descripcion>.sql`.
 - Flyway las aplica al arrancar. Si una falla, la aplicación no arranca.
 
 Reglas:
@@ -59,7 +61,7 @@ Reglas:
 El Dev Container no tiene `docker`. Los contenedores se manejan en el host, desde la raíz del repositorio:
 
 - Estado, logs y parada: `docker compose -f docker/compose.yml`, seguido de `ps`, `logs -f db` o `down`. `down` no borra datos.
-- Borrar el volumen de la base: `docker volume rm crockgold_core_pgdata` tras `down`. Solo hace falta para que PostgreSQL vuelva a aplicar usuario y contraseña. Para vaciar los datos basta `make db-reset`.
+- Borrar el volumen de la base: `docker volume rm crockgold_core_pgdata` tras `down`. Solo hace falta como alternativa a [rotar credenciales](CONFIGURATION.md#rotar-credenciales). Para vaciar los datos basta `make db-reset`.
 - Los puertos `8080` y `5432` solo se publican en `127.0.0.1`.
 
 ### Probar la imagen de producción antes de un release

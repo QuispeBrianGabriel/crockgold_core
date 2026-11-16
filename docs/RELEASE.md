@@ -20,7 +20,7 @@ flowchart LR
 5. Seguir el workflow [Release](https://github.com/QuispeBrianGabriel/crockgold_core/actions/workflows/release.yml) y el despliegue en Railway.
 6. Comprobar producción con `make smoke URL=<url> USUARIO=<usuario> CLAVE=<clave>`.
 
-El smoke espera `200` en `/actuator/health`, `401` sin credenciales y `404` con ellas. El `404` es lo esperado hoy, porque la API aún no expone endpoints de negocio.
+El smoke espera `200` en `/actuator/health`, `401` sin credenciales y `404` con ellas. El `404` es lo esperado, porque el smoke consulta `/`, que no existe.
 
 Si producción falla: [RUNBOOK.md](RUNBOOK.md).
 
