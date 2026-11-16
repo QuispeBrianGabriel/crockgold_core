@@ -66,6 +66,10 @@ tasks.named('test') {
 
 tasks.named('jacocoTestReport') {
 	reports.html.required = true
+	// El arranque (main) no es lógica que un test pueda ejercitar
+	classDirectories.setFrom(files(classDirectories.files.collect {
+		fileTree(dir: it, exclude: 'com/crockgold/core/CrockgoldCoreApplication.class')
+	}))
 }
 
 tasks.withType(JavaCompile).configureEach {
