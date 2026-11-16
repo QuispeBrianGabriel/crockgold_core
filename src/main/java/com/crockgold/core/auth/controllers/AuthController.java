@@ -18,20 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-class AuthController {
+class AuthController implements AuthApi {
 
   private final AuthService authService;
 
+  @Override
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
-  UserResponse register(@Valid @RequestBody RegisterRequest request) {
+  public UserResponse register(@Valid @RequestBody RegisterRequest request) {
     Email email = new Email(request.email());
     Password password = new Password(request.password());
     return UserResponse.from(authService.register(email, password));
   }
 
+  @Override
   @PostMapping("/login")
-  UserResponse login(@Valid @RequestBody LoginRequest request) {
+  public UserResponse login(@Valid @RequestBody LoginRequest request) {
     Email email = new Email(request.email());
     String password = request.password();
     return UserResponse.from(authService.login(email, password));

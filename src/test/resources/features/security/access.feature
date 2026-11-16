@@ -25,6 +25,16 @@ Característica: Acceso a la API
       Cuando consulta una operación que no existe
       Entonces se le deniega el acceso
 
+    @unhappy
+    Escenario: Un cliente sin credencial no accede a la documentación de la API
+      Cuando consulta la documentación de la API
+      Entonces se le deniega el acceso
+
+    @unhappy
+    Escenario: Un cliente sin credencial no explora la documentación desde el navegador
+      Cuando abre la documentación en el navegador
+      Entonces se le deniega el acceso
+
   Regla: La credencial se presenta en cada consulta, porque la API no abre sesiones
 
     @happy

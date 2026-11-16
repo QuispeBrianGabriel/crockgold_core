@@ -7,3 +7,9 @@ spring:
   threads:
     virtual:
       enabled: true
+springdoc:
+  show-actuator: true
+  default-produces-media-type: application/json
+  swagger-ui:
+    try-it-out-enabled: true
+    display-request-duration: true

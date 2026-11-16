@@ -20,6 +20,7 @@ Dentro del Dev Container:
 | Arrancar la API | `make run` | <http://localhost:8080> |
 | Detener la API | `make stop` | |
 | Probar la API | `make smoke` | [qué comprueba](RELEASE.md#pasos) |
+| Ver la documentación de la API | `make swagger` | Swagger UI, pide la credencial de la API: [ADR 0014](adr/0014-documentacion-openapi-con-springdoc.md) |
 | Validar todo | `make check` | lo mismo que el Pipeline |
 | Tests | `make test T='*Patron*'` | `T` es opcional |
 | Corregir el formato | `make format` | |

@@ -35,7 +35,7 @@ CLAVE   ?= $(SPRING_SECURITY_USER_PASSWORD)
 PSQL := env PGPASSWORD="$(SPRING_DATASOURCE_PASSWORD)" psql --username="$(SPRING_DATASOURCE_USERNAME)" "$(subst jdbc:,,$(SPRING_DATASOURCE_URL))"
 
 .PHONY: setup help tree secret docs-lint \
-        run stop health smoke \
+        run stop health smoke swagger \
         check test format format-check coverage report \
         compile build clean gradle-reset \
         psql db-tables db-migrations migration db-dump db-restore db-reset \
@@ -70,6 +70,7 @@ help:
 	@printf $(ITEM) "stop"          "⏹️  Detiene la API y libera el 8080"
 	@printf $(ARGS) "health"        "💓 Consulta /actuator/health"
 	@printf $(ARGS) "smoke"         "🔥 Comprueba health, 401 y 404"
+	@printf $(ARGS) "swagger"       "📘 Abre Swagger UI en el navegador"
 
 	@printf "$(TITLE)" "🧪 Calidad"
 	@printf $(ITEM) "check"         "✅ Lo mismo que el pipeline"
@@ -131,6 +132,9 @@ health:
 
 smoke:
 	@scripts/smoke.sh "$(URL)" "$(USUARIO)" "$(CLAVE)"
+
+swagger:
+	@scripts/swagger.sh "$(URL)"
 
 # =============================================================================
 #  🧪 Calidad

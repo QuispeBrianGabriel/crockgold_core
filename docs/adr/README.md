@@ -15,5 +15,6 @@
 | [0011](0011-api-rest-pragmatica.md) | API REST pragmática, no REST completo | Aceptado |
 | [0012](0012-hexagonal-no-estricta.md) | Arquitectura hexagonal no estricta | Aceptado |
 | [0013](0013-integracion-con-cucumber-y-serenity.md) | Tests de integración con Cucumber y Serenity BDD | Aceptado |
+| [0014](0014-documentacion-openapi-con-springdoc.md) | Documentación OpenAPI con springdoc, protegida | Aceptado |
 
 Un ADR nuevo se crea con `/docs-write`. Uno aceptado no se reescribe: lo reemplaza otro.

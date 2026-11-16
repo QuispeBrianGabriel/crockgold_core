@@ -44,6 +44,16 @@ public class AccessSteps {
     get("/auth/anything");
   }
 
+  @When("consulta la documentación de la API")
+  public void getApiDocs() {
+    get("/v3/api-docs");
+  }
+
+  @When("abre la documentación en el navegador")
+  public void getSwaggerUi() {
+    get("/swagger-ui/index.html");
+  }
+
   @Then("ve que la aplicación está disponible")
   public void seesApplicationIsUp() {
     assertThat(response).hasStatusOk().bodyJson().extractingPath("$.status").isEqualTo("UP");
