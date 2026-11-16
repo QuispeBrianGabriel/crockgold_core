@@ -13,7 +13,8 @@ Los tests de integración en JUnit mezclaban el comportamiento esperado con el c
 - Los ejecuta `IntegrationSuite` con Cucumber 8 y Serenity BDD 5, dentro de `./gradlew check`.
 - Cada `.feature` abre con su historia de usuario (Como, Quiero, Para) y agrupa los escenarios por `Regla` de negocio.
 - Los escenarios hablan el lenguaje del dominio. No nombran rutas, códigos de estado, JSON ni persistencia.
-- Los casos de una misma regla se reúnen en un `Esquema del escenario` con su tabla de `Ejemplos`. Los pasos reciben los datos como parámetros para reutilizarse.
+- Cada escenario tiene un único resultado: registro aceptado, o rechazo por un motivo concreto. Un motivo distinto es otro escenario. No se usa `Esquema del escenario`.
+- Los valores que comparten resultado se pasan al escenario en una tabla de datos. Los pasos reciben los datos como parámetros para reutilizarse.
 - Cada escenario lleva `@happy` o `@unhappy`, y `@border` si prueba un límite. Los marcados con `@wip` no se ejecutan ni hacen fallar `./gradlew check`.
 - `integration/steps/` tiene una clase de pasos por módulo. Ella traduce el dominio a peticiones HTTP y comprueba las respuestas.
 - `integration/support/` contiene el contexto de Spring, Testcontainers y el reinicio de la base.
