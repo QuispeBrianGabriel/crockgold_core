@@ -16,5 +16,6 @@
 | [0012](0012-hexagonal-no-estricta.md) | Arquitectura hexagonal no estricta | Aceptado |
 | [0013](0013-integracion-con-cucumber-y-serenity.md) | Tests de integración con Cucumber y Serenity BDD | Aceptado |
 | [0014](0014-documentacion-openapi-con-springdoc.md) | Documentación OpenAPI con springdoc, protegida | Aceptado |
+| [0015](0015-limites-de-modulos-con-spring-modulith.md) | Límites entre módulos verificados con Spring Modulith | Aceptado |
 
 Un ADR nuevo se crea con `/docs-write`. Uno aceptado no se reescribe: lo reemplaza otro.
