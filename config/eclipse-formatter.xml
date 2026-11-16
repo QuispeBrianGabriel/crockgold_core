@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profiles version="23">
+  <profile kind="CodeFormatterProfile" name="crockgold" version="23">
+    <setting id="org.eclipse.jdt.core.formatter.tabulation.char" value="space"/>
+    <setting id="org.eclipse.jdt.core.formatter.tabulation.size" value="2"/>
+    <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="100"/>
+    <setting id="org.eclipse.jdt.core.formatter.continuation_indentation" value="1"/>
+    <setting id="org.eclipse.jdt.core.formatter.keep_simple_if_on_one_line" value="false"/>
+    <setting id="org.eclipse.jdt.core.formatter.keep_method_body_on_one_line" value="one_line_if_empty"/>
+    <setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="49"/>
+    <setting id="org.eclipse.jdt.core.formatter.join_wrapped_lines" value="false"/>
+    <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="100"/>
+  </profile>
+</profiles>
