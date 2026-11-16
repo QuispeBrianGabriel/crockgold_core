@@ -11,6 +11,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       SPRING_SECURITY_USER_NAME: ${SPRING_SECURITY_USER_NAME}
       SPRING_SECURITY_USER_PASSWORD: ${SPRING_SECURITY_USER_PASSWORD}
+      FRONT_URL: ${FRONT_URL:-}
       TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
     extra_hosts:
       - "host.docker.internal:host-gateway"
